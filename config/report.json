@@ -1,0 +1,26 @@
+{
+  "radarAxes": [
+    "집중 유지",
+    "실행 기능",
+    "충동 조절",
+    "정서 안정",
+    "일상 구조화"
+  ],
+  "sections": [
+    {
+      "key": "summary",
+      "title": "종합 해석",
+      "description": "ASAR와 DSM-5 응답을 바탕으로 현재 패턴을 요약합니다."
+    },
+    {
+      "key": "strength",
+      "title": "강점 신호",
+      "description": "흥미 기반 몰입, 민감한 패턴 감지 등 보호 요인을 요약합니다."
+    },
+    {
+      "key": "watchout",
+      "title": "주의할 점",
+      "description": "미루기, 시작 지연, 외부 구조 필요성 등 주의 영역을 정리합니다."
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>soul.ai.kr - Response Test</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#a2b01e",
+              "surface": "#131313",
+              "on-tertiary": "#2e3300",
+              "outline": "#a08b98",
+              "on-error": "#690005",
+              "error": "#ffb4ab",
+              "on-primary": "#5d0055",
+              "on-tertiary-fixed-variant": "#444b00",
+              "on-primary-container": "#720068",
+              "on-surface": "#e2e2e2",
+              "secondary-container": "#3124d3",
+              "surface-variant": "#353535",
+              "surface-tint": "#ffacea",
+              "secondary-fixed-dim": "#c2c1ff",
+              "inverse-surface": "#e2e2e2",
+              "surface-container-highest": "#353535",
+              "primary-fixed-dim": "#ffacea",
+              "on-primary-fixed": "#390034",
+              "surface-container-high": "#2a2a2a",
+              "secondary": "#c2c1ff",
+              "outline-variant": "#52424d",
+              "on-surface-variant": "#d7c0ce",
+              "on-background": "#e2e2e2",
+              "on-secondary-container": "#b2b1ff",
+              "inverse-primary": "#9f2d90",
+              "secondary-fixed": "#e2dfff",
+              "on-primary-fixed-variant": "#810b76",
+              "surface-container": "#1f1f1f",
+              "primary-fixed": "#ffd7f1",
+              "primary": "#ffacea",
+              "error-container": "#93000a",
+              "tertiary-fixed-dim": "#c1d03f",
+              "tertiary-fixed": "#ddec59",
+              "on-secondary-fixed": "#0c006a",
+              "surface-container-lowest": "#0e0e0e",
+              "on-tertiary-container": "#3a4000",
+              "on-tertiary-fixed": "#1a1e00",
+              "on-error-container": "#ffdad6",
+              "background": "#131313",
+              "on-secondary-fixed-variant": "#2e20d1",
+              "surface-container-low": "#1b1b1b",
+              "inverse-on-surface": "#303030",
+              "primary-container": "#f67adf",
+              "tertiary": "#c1d03f",
+              "surface-dim": "#131313",
+              "surface-bright": "#393939",
+              "on-secondary": "#1900a7"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .pulse-ring {
+            animation: ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes ring {
+            0% { transform: scale(1); opacity: 0.5; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body min-h-screen overflow-hidden select-none">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#131313] dark:bg-[#131313] flex items-center justify-center h-16 px-6 w-full tonal-shift bg-[#1B1B1B]">
+<div class="flex items-center justify-between w-full max-w-5xl">
+<div class="w-10"></div> <!-- Spacer for centering -->
+<h1 class="text-xl font-bold tracking-tighter text-[#E2E2E2] font-['Plus_Jakarta_Sans']">soul.ai.kr</h1>
+<button class="text-[#E2E2E2] hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="more_vert">more_vert</span>
+</button>
+</div>
+</header>
+<!-- Main Game Canvas -->
+<main class="relative h-screen w-full flex flex-col items-center justify-center px-6 pt-16 pb-24">
+<!-- Background Aesthetic Elements -->
+<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+<div class="absolute top-[15%] left-[10%] w-64 h-64 rounded-full bg-primary/10 blur-[100px]"></div>
+<div class="absolute bottom-[20%] right-[5%] w-80 h-80 rounded-full bg-tertiary/10 blur-[120px]"></div>
+</div>
+<!-- Dashboard Stats (Top Asymmetric Bento) -->
+<div class="z-10 w-full max-w-md grid grid-cols-2 gap-4 mb-8">
+<div class="bg-surface-container-low rounded-lg p-5 flex flex-col gap-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">Avg. Response</span>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-headline font-extrabold text-primary">248</span>
+<span class="text-sm font-label text-primary">ms</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-5 flex flex-col gap-1">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface-variant opacity-60">Stability</span>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-headline font-extrabold text-tertiary">92</span>
+<span class="text-sm font-label text-tertiary">%</span>
+</div>
+</div>
+</div>
+<!-- Interaction Area -->
+<div class="relative z-10 w-full max-w-md aspect-square flex items-center justify-center cursor-pointer group">
+<!-- Glassmorphism Container -->
+<div class="absolute inset-0 bg-surface-container-highest/20 backdrop-blur-sm rounded-[3rem] border border-white/5 shadow-2xl"></div>
+<!-- Interactive Target -->
+<div class="relative flex items-center justify-center w-64 h-64">
+<!-- Pulse Rings -->
+<div class="absolute inset-0 rounded-full border-4 border-primary/30 pulse-ring"></div>
+<div class="absolute inset-0 rounded-full border-2 border-primary/20 pulse-ring" style="animation-delay: 0.5s"></div>
+<!-- Main Button -->
+<div class="relative w-48 h-48 rounded-full bg-gradient-to-br from-primary to-primary-container flex flex-col items-center justify-center shadow-[0_0_50px_rgba(246,122,223,0.4)] transition-all duration-200 active:scale-90 active:shadow-inner group-hover:scale-105">
+<span class="text-on-primary font-headline font-extrabold text-3xl tracking-tight">TAP NOW</span>
+<span class="text-on-primary/60 font-label text-[10px] mt-1 font-bold">WAIT FOR SIGNAL</span>
+</div>
+</div>
+<!-- Context Hint -->
+<div class="absolute bottom-10 left-0 w-full text-center">
+<p class="font-body text-sm text-on-surface-variant opacity-60 px-12">
+                    Wait for the circle to turn <span class="text-tertiary font-bold">GREEN</span>, then tap as fast as possible.
+                </p>
+</div>
+</div>
+<!-- Asymmetric Decorative Element -->
+<div class="absolute -right-12 top-1/2 -translate-y-1/2 z-0 opacity-20">
+<div class="w-48 h-48 rounded-full border-[32px] border-secondary-container"></div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3 bg-[#131313]/80 backdrop-blur-xl dark:bg-[#131313]/80 rounded-t-[2rem] z-50 shadow-[0_-4px_48px_rgba(226,226,226,0.06)] no-line tonal-shift-top">
+<!-- Intro -->
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="info">info</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Intro</span>
+</a>
+<!-- ID -->
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="fingerprint">fingerprint</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">ID</span>
+</a>
+<!-- Tests (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-[#F67ADF] text-[#1900A7] rounded-full px-4 py-1.5 transition-all duration-300 scale-110 active:scale-90" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="quiz" style="font-variation-settings: 'FILL' 1;">quiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Tests</span>
+</a>
+<!-- Result -->
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="analytics">analytics</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Result</span>
+</a>
+<!-- Training -->
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="fitness_center">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest">Training</span>
+</a>
+</nav>
+</body></html>

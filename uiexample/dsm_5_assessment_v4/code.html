@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#a2b01e",
+              "surface": "#131313",
+              "on-tertiary": "#2e3300",
+              "outline": "#a08b98",
+              "on-error": "#690005",
+              "error": "#ffb4ab",
+              "on-primary": "#5d0055",
+              "on-tertiary-fixed-variant": "#444b00",
+              "on-primary-container": "#720068",
+              "on-surface": "#e2e2e2",
+              "secondary-container": "#3124d3",
+              "surface-variant": "#353535",
+              "surface-tint": "#ffacea",
+              "secondary-fixed-dim": "#c2c1ff",
+              "inverse-surface": "#e2e2e2",
+              "surface-container-highest": "#353535",
+              "primary-fixed-dim": "#ffacea",
+              "on-primary-fixed": "#390034",
+              "surface-container-high": "#2a2a2a",
+              "secondary": "#c2c1ff",
+              "outline-variant": "#52424d",
+              "on-surface-variant": "#d7c0ce",
+              "on-background": "#e2e2e2",
+              "on-secondary-container": "#b2b1ff",
+              "inverse-primary": "#9f2d90",
+              "secondary-fixed": "#e2dfff",
+              "on-primary-fixed-variant": "#810b76",
+              "surface-container": "#1f1f1f",
+              "primary-fixed": "#ffd7f1",
+              "primary": "#ffacea",
+              "error-container": "#93000a",
+              "tertiary-fixed-dim": "#c1d03f",
+              "tertiary-fixed": "#ddec59",
+              "on-secondary-fixed": "#0c006a",
+              "surface-container-lowest": "#0e0e0e",
+              "on-tertiary-container": "#3a4000",
+              "on-tertiary-fixed": "#1a1e00",
+              "on-error-container": "#ffdad6",
+              "background": "#131313",
+              "on-secondary-fixed-variant": "#2e20d1",
+              "surface-container-low": "#1b1b1b",
+              "inverse-on-surface": "#303030",
+              "primary-container": "#f67adf",
+              "tertiary": "#c1d03f",
+              "surface-dim": "#131313",
+              "surface-bright": "#393939",
+              "on-secondary": "#1900a7"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-shift { background-color: #1B1B1B; }
+        .no-line { border: none !important; }
+        .tonal-shift-top { background-color: rgba(19, 19, 19, 0.8); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#131313] dark:bg-[#131313] tonal-shift">
+<div class="flex items-center justify-center h-16 px-6 w-full">
+<span class="text-xl font-bold tracking-tighter text-[#E2E2E2] font-headline">soul.ai.kr</span>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-2xl mx-auto">
+<!-- Progress Section -->
+<div class="mb-12">
+<div class="flex justify-between items-end mb-4">
+<div>
+<span class="font-label text-primary text-sm uppercase tracking-widest">Section 01/04</span>
+<h1 class="text-4xl font-headline font-bold tracking-tight mt-1">Inattention</h1>
+</div>
+<div class="text-right">
+<span class="font-label text-on-surface-variant text-lg">14%</span>
+</div>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full transition-all duration-700 w-[14%]"></div>
+</div>
+</div>
+<!-- Question Canvas -->
+<div class="relative group">
+<!-- Decorative Asymmetric Element -->
+<div class="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-tertiary/10 blur-3xl group-hover:bg-tertiary/20 transition-all duration-500"></div>
+<div class="relative bg-surface-container rounded-lg p-8 md:p-12 shadow-sm">
+<div class="flex items-start gap-4 mb-8">
+<span class="font-label text-tertiary text-2xl">Q.</span>
+<p class="text-2xl md:text-3xl font-headline leading-tight text-on-surface">
+                        Does the individual often fail to give close attention to details or make careless mistakes in schoolwork, work, or other activities?
+                    </p>
+</div>
+<div class="flex flex-col gap-4">
+<p class="text-on-surface-variant italic mb-6">
+                        Example: Overlooks or misses details, work is inaccurate.
+                    </p>
+<!-- Horizontal Action Buttons -->
+<div class="grid grid-cols-2 gap-4">
+<button class="group flex items-center justify-center gap-3 bg-surface-container-highest text-on-surface py-6 rounded-full hover:bg-primary/10 transition-all active:scale-95">
+<span class="material-symbols-outlined text-primary group-hover:scale-110 transition-transform">close</span>
+<span class="font-label uppercase tracking-widest font-bold">No</span>
+</button>
+<button class="group flex items-center justify-center gap-3 bg-secondary text-on-secondary py-6 rounded-full hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-secondary/10">
+<span class="material-symbols-outlined font-bold group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 1;">check</span>
+<span class="font-label uppercase tracking-widest font-bold">Yes</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Guidelines / Help Section -->
+<div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="bg-surface-container-low rounded-lg p-6 flex flex-col gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">psychology</span>
+</div>
+<h3 class="font-headline font-bold text-lg">DSM-5 Context</h3>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                    Criteria require symptoms to persist for at least 6 months to a degree that is inconsistent with developmental level.
+                </p>
+</div>
+<div class="bg-surface-container-low rounded-lg p-6 flex flex-col gap-4 overflow-hidden relative">
+<img class="absolute inset-0 w-full h-full object-cover opacity-10" data-alt="Abstract therapeutic sculpture with smooth flowing curves in a minimalist dark studio setting with soft pink lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDTPsoSUXXeRQfiAYP2dPSH0luskxf-r2L9nmrwyJVTJ_g5C9-rXkY8RX2PXa6Cal8zdKLGoaoBESk6UWNowT0fQkAaujx9GHQUkW77_EKxi-TzkvKxLRGeAhpRMEedK0UQg0f1TIIhwzOcST9JthyhaMinoRuZozQaz2e_9XqEt-9tFG86f5KxalFEicvcEzRKgB704J8bBeEHHdlvidE8GQD-cSdpaSLxwlY_n0nZOHaX4DndrZ9A3uoiM_ZDIcIFd2kkITmXCCj7"/>
+<div class="relative z-10">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-tertiary">history_edu</span>
+</div>
+<h3 class="font-headline font-bold text-lg">Clinical Note</h3>
+<p class="text-sm text-on-surface-variant leading-relaxed">
+                        Assess based on the last 6 months of behavior across multiple settings (home, school, work).
+                    </p>
+</div>
+</div>
+</div>
+<!-- Navigation Context -->
+<div class="mt-8 flex justify-between items-center text-on-surface-variant font-label text-xs uppercase tracking-widest">
+<button class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+                Previous Question
+            </button>
+<button class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+                Save &amp; Exit
+                <span class="material-symbols-outlined text-sm">logout</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full rounded-t-[2rem] z-50 bg-[#131313]/80 backdrop-blur-xl dark:bg-[#131313]/80 shadow-[0_-4px_48px_rgba(226,226,226,0.06)] no-line">
+<div class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-3">
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">info</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Intro</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">ID</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#F67ADF] text-[#1900A7] rounded-full px-6 py-1.5 scale-110 active:scale-90 transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">quiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Tests</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Result</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Training</span>
+</a>
+</div>
+</nav>
+</body></html>

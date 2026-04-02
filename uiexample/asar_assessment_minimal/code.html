@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ASAR Assessment | soul.ai.kr</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&amp;family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary-container": "#a2b01e",
+              "surface": "#131313",
+              "on-tertiary": "#2e3300",
+              "outline": "#a08b98",
+              "on-error": "#690005",
+              "error": "#ffb4ab",
+              "on-primary": "#5d0055",
+              "on-tertiary-fixed-variant": "#444b00",
+              "on-primary-container": "#720068",
+              "on-surface": "#e2e2e2",
+              "secondary-container": "#3124d3",
+              "surface-variant": "#353535",
+              "surface-tint": "#ffacea",
+              "secondary-fixed-dim": "#c2c1ff",
+              "inverse-surface": "#e2e2e2",
+              "surface-container-highest": "#353535",
+              "primary-fixed-dim": "#ffacea",
+              "on-primary-fixed": "#390034",
+              "surface-container-high": "#2a2a2a",
+              "secondary": "#c2c1ff",
+              "outline-variant": "#52424d",
+              "on-surface-variant": "#d7c0ce",
+              "on-background": "#e2e2e2",
+              "on-secondary-container": "#b2b1ff",
+              "inverse-primary": "#9f2d90",
+              "secondary-fixed": "#e2dfff",
+              "on-primary-fixed-variant": "#810b76",
+              "surface-container": "#1f1f1f",
+              "primary-fixed": "#ffd7f1",
+              "primary": "#ffacea",
+              "error-container": "#93000a",
+              "tertiary-fixed-dim": "#c1d03f",
+              "tertiary-fixed": "#ddec59",
+              "on-secondary-fixed": "#0c006a",
+              "surface-container-lowest": "#0e0e0e",
+              "on-tertiary-container": "#3a4000",
+              "on-tertiary-fixed": "#1a1e00",
+              "on-error-container": "#ffdad6",
+              "background": "#131313",
+              "on-secondary-fixed-variant": "#2e20d1",
+              "surface-container-low": "#1b1b1b",
+              "inverse-on-surface": "#303030",
+              "primary-container": "#f67adf",
+              "tertiary": "#c1d03f",
+              "surface-dim": "#131313",
+              "surface-bright": "#393939",
+              "on-secondary": "#1900a7"
+            },
+            fontFamily: {
+              "headline": ["Plus Jakarta Sans"],
+              "body": ["Inter"],
+              "label": ["Space Grotesk"]
+            },
+            borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .tonal-shift { background-color: #1B1B1B; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#131313] tonal-shift">
+<div class="flex items-center justify-center h-16 px-6 w-full">
+<h1 class="text-xl font-bold tracking-tighter text-[#E2E2E2] font-['Plus_Jakarta_Sans']">soul.ai.kr</h1>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto">
+<!-- Progress Section -->
+<section class="mb-12">
+<div class="flex justify-between items-end mb-4">
+<div>
+<span class="font-label text-tertiary text-sm tracking-widest uppercase">Assessment in progress</span>
+<h2 class="font-headline text-3xl font-extrabold tracking-tight mt-1">ASAR Scale</h2>
+</div>
+<div class="text-right">
+<span class="font-label text-primary text-2xl font-bold">04</span>
+<span class="font-label text-on-surface-variant text-sm">/ 18</span>
+</div>
+</div>
+<div class="h-3 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary-container w-[22%] rounded-full shadow-[0_0_12px_rgba(246,122,223,0.4)]"></div>
+</div>
+</section>
+<!-- Question Card - Focused Layout -->
+<div class="space-y-12">
+<div class="rounded-lg bg-surface-container-low p-8 shadow-sm">
+<p class="text-2xl font-headline font-semibold leading-relaxed mb-12 text-on-surface text-center md:text-left">
+                    How often do you find yourself losing track of time when deeply engaged in a task you enjoy?
+                </p>
+<!-- 5-Point Horizontal Scale - Primary Focus -->
+<div class="flex flex-col gap-6">
+<div class="grid grid-cols-5 gap-3 md:gap-6">
+<button class="group flex flex-col items-center gap-4">
+<div class="w-full aspect-square rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-transparent hover:border-primary transition-all duration-300 group-active:scale-95">
+<span class="font-label text-lg text-on-surface-variant group-hover:text-primary transition-colors">1</span>
+</div>
+<span class="font-label text-[10px] uppercase tracking-tighter text-on-surface-variant text-center leading-none">Never</span>
+</button>
+<button class="group flex flex-col items-center gap-4">
+<div class="w-full aspect-square rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-transparent hover:border-primary transition-all duration-300 group-active:scale-95">
+<span class="font-label text-lg text-on-surface-variant group-hover:text-primary transition-colors">2</span>
+</div>
+<span class="font-label text-[10px] uppercase tracking-tighter text-on-surface-variant text-center leading-none">Rarely</span>
+</button>
+<button class="group flex flex-col items-center gap-4">
+<div class="w-full aspect-square rounded-full bg-primary-container/20 border-2 border-primary-container flex items-center justify-center transition-all duration-300 group-active:scale-95">
+<span class="font-label text-lg text-primary">3</span>
+</div>
+<span class="font-label text-[10px] uppercase tracking-tighter text-primary text-center leading-none">Sometimes</span>
+</button>
+<button class="group flex flex-col items-center gap-4">
+<div class="w-full aspect-square rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-transparent hover:border-primary transition-all duration-300 group-active:scale-95">
+<span class="font-label text-lg text-on-surface-variant group-hover:text-primary transition-colors">4</span>
+</div>
+<span class="font-label text-[10px] uppercase tracking-tighter text-on-surface-variant text-center leading-none">Often</span>
+</button>
+<button class="group flex flex-col items-center gap-4">
+<div class="w-full aspect-square rounded-full bg-surface-container-highest flex items-center justify-center border-2 border-transparent hover:border-primary transition-all duration-300 group-active:scale-95">
+<span class="font-label text-lg text-on-surface-variant group-hover:text-primary transition-colors">5</span>
+</div>
+<span class="font-label text-[10px] uppercase tracking-tighter text-on-surface-variant text-center leading-none">Always</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Support Info - Clean Layout -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="p-6 rounded-lg bg-surface-container-high flex items-center gap-4 cursor-pointer hover:bg-surface-variant transition-colors border border-outline/10">
+<div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined text-xl">help</span>
+</div>
+<div>
+<h4 class="font-bold text-sm">Need Clarification?</h4>
+<p class="text-xs text-on-surface-variant">See examples of this behavior</p>
+</div>
+</div>
+<div class="p-6 rounded-lg bg-surface-container-high flex items-center gap-4 cursor-pointer hover:bg-surface-variant transition-colors border border-outline/10">
+<div class="w-10 h-10 rounded-full bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-xl">lightbulb</span>
+</div>
+<div>
+<h4 class="font-bold text-sm">Pro Tip</h4>
+<p class="text-xs text-on-surface-variant">Think of your typical workday</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Area -->
+<div class="mt-12 flex items-center justify-between">
+<button class="flex items-center gap-2 px-6 py-3 rounded-full text-on-surface-variant hover:text-on-surface transition-colors font-medium">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span>Previous</span>
+</button>
+<button class="bg-secondary text-on-secondary px-10 py-4 rounded-full font-bold text-lg hover:scale-105 active:scale-95 transition-all shadow-lg">
+                Next Question
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-[#131313]/80 backdrop-blur-xl shadow-[0_-4px_48px_rgba(226,226,226,0.06)] rounded-t-[2rem]">
+<div class="w-full flex justify-around items-center px-4 pb-6 pt-3">
+<div class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-all active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="info">info</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Intro</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-all active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">ID</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-[#F67ADF] text-[#1900A7] rounded-full px-6 py-1.5 transition-all duration-300 scale-110 active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Tests</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-all active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Result</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#E2E2E2] opacity-50 px-4 py-1.5 hover:opacity-100 hover:scale-110 transition-all active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined" data-icon="fitness_center">fitness_center</span>
+<span class="font-['Inter'] text-[10px] font-medium uppercase tracking-widest mt-1">Training</span>
+</div>
+</div>
+</nav>
+</body></html>

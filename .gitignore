@@ -1,0 +1,4 @@
+.env
+.server.pid
+server.log
+database/*.json
