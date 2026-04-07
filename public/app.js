@@ -1,24 +1,26 @@
 const state = {
   route: "intro",
   configs: {
-    asar: null,
+    asrs: null,
     dsm: null,
     report: null
   },
   aiStatus: null,
   records: [],
   currentRecord: null,
-  asarIndex: 0,
+  asrsIndex: 0,
   dsmIndex: 0,
   isGeneratingInsights: false,
-  manualFileName: "",
+  isGeneratingAsrsAnalysis: false,
+  loadUserId: "",
+  showExistingIdForm: false,
+  showAdminModal: false,
   statusMessage: ""
 };
 
 const routes = [
   { key: "intro", label: "Intro", icon: "info" },
-  { key: "id", label: "ID", icon: "fingerprint" },
-  { key: "asar", label: "ASAR", icon: "quiz" },
+  { key: "asrs", label: "ASRS", icon: "quiz" },
   { key: "dsm", label: "DSM", icon: "checklist" },
   { key: "game", label: "Game", icon: "neurology" },
   { key: "report", label: "Report", icon: "analytics" },
@@ -36,12 +38,12 @@ async function init() {
 }
 
 async function loadConfigs() {
-  const [asar, dsm, report] = await Promise.all([
-    api(`/api/config/asar.json`),
+  const [asrs, dsm, report] = await Promise.all([
+    api(`/api/config/asrs.json`),
     api(`/api/config/dsm-5.json`),
     api(`/api/config/report.json`)
   ]);
-  state.configs = { asar, dsm, report };
+  state.configs = { asrs, dsm, report };
 }
 
 async function loadRecords() {
@@ -80,9 +82,17 @@ function makeTimestamp(now) {
   ].join("") + "-" + [pad(now.getHours()), pad(now.getMinutes()), pad(now.getSeconds())].join("");
 }
 
+function normalizeUserId(value) {
+  return String(value || "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9-_]/g, "")
+    .toLowerCase();
+}
+
 function createEmptyRecord(userId) {
   const createdAt = new Date().toISOString();
-  const safeId = userId.trim().replace(/\s+/g, "-").replace(/[^a-zA-Z0-9-_]/g, "").toLowerCase() || "guest";
+  const safeId = normalizeUserId(userId) || "guest";
   const fileName = `${safeId}-${makeTimestamp(new Date())}.json`;
   return {
     id: safeId,
@@ -91,7 +101,7 @@ function createEmptyRecord(userId) {
     fileName,
     currentStep: "id",
     tests: {
-      asar: [],
+      asrs: [],
       dsm5: [],
       game: { status: "pending" }
     },
@@ -100,6 +110,76 @@ function createEmptyRecord(userId) {
       suggestions: [],
       chat: []
     }
+  };
+}
+
+function getAsrsAnswers(record = state.currentRecord) {
+  return record?.tests?.asrs || record?.tests?.asar || [];
+}
+
+function normalizeCurrentStep(step) {
+  return step === "asar" ? "asrs" : step;
+}
+
+function findLatestRecordById(userId) {
+  const normalizedId = normalizeUserId(userId);
+  return state.records.find((record) => record.id === normalizedId) || null;
+}
+
+async function syncCurrentStep(route) {
+  if (!state.currentRecord) {
+    return;
+  }
+
+  const flowSteps = new Set(["asrs", "asrs-result", "dsm", "game", "report", "plan"]);
+  if (!flowSteps.has(route)) {
+    return;
+  }
+
+  state.currentRecord.currentStep = route;
+  await persistRecord();
+}
+
+function analyzeAsrs(record = state.currentRecord) {
+  const answers = getAsrsAnswers(record)
+    .map((item) => Number(item.answer))
+    .filter((value) => Number.isFinite(value));
+  const thresholds = [2, 2, 2, 3, 3, 3];
+  const positiveFlags = answers.map((answer, index) => answer >= thresholds[index]);
+  const totalPositive = positiveFlags.filter(Boolean).length;
+  const attentionPositive = positiveFlags.slice(0, 4).filter(Boolean).length;
+  const hyperPositive = positiveFlags.slice(4).filter(Boolean).length;
+  const isComplete = answers.length === 6;
+  const severity = totalPositive >= 4 ? "비교적 높음" : "관찰 필요";
+
+  let summary = "현재 응답만으로는 뚜렷한 ASRS 양상이 많지 않습니다.";
+  if (totalPositive >= 4) {
+    summary = "ASRS에서 유의미한 문항이 4개 이상으로 나타나 추가 평가를 고려할 만한 패턴입니다.";
+  } else if (totalPositive >= 2) {
+    summary = "ASRS에서 일부 주의집중 또는 실행기능 관련 어려움이 관찰되어 맥락을 함께 볼 필요가 있습니다.";
+  }
+
+  const attentionMessage = attentionPositive
+    ? `주의력 결핍 관련 문항 4개 중 ${attentionPositive}개가 기준 이상입니다. 집중 유지, 마감 관리, 시작 지연에서 어려움이 나타날 수 있습니다.`
+    : "주의력 결핍 관련 문항은 현재 기준 이상 응답이 많지 않습니다.";
+  const hyperMessage = hyperPositive
+    ? `과잉행동·충동성 관련 문항 2개 중 ${hyperPositive}개가 기준 이상입니다. 오래 앉아 있기 어렵거나 대화 중 끼어드는 양상이 함께 있을 수 있습니다.`
+    : "과잉행동·충동성 관련 문항은 현재 기준 이상 응답이 많지 않습니다.";
+  const guidance = totalPositive >= 4
+    ? "이 검사는 선별 도구이며 확진 검사가 아닙니다. 다만 현재 패턴은 비교적 뚜렷하므로 필요하면 CAT, DIVA-5, 임상 면담 같은 정밀 평가를 받아보는 것이 도움이 될 수 있습니다."
+    : "이 검사는 선별 도구이며 확진 검사가 아닙니다. 현재 어려움은 스트레스, 수면 부족, 불안·우울 같은 다른 요인과도 겹칠 수 있으니 지속되면 전문가 상담을 고려해 보세요.";
+
+  return {
+    answers,
+    isComplete,
+    totalPositive,
+    attentionPositive,
+    hyperPositive,
+    severity,
+    summary,
+    attentionMessage,
+    hyperMessage,
+    guidance
   };
 }
 
@@ -143,7 +223,7 @@ function requireRecord(nextRoute) {
 }
 
 function navTo(route) {
-  if (["asar", "dsm", "game", "report", "plan"].includes(route) && !state.currentRecord) {
+  if (["asrs", "asrs-result", "dsm", "game", "report", "plan"].includes(route) && !state.currentRecord) {
     requireRecord(route);
     return;
   }
@@ -157,39 +237,82 @@ async function handleCreateId(event) {
   state.currentRecord = createEmptyRecord(String(userId || ""));
   await persistRecord();
   setStatus(`${state.currentRecord.fileName} 생성 완료`);
-  navTo("asar");
+  navTo("asrs");
 }
 
 async function handleLoadRecord(fileName) {
   state.currentRecord = await api(`/api/records/${fileName}`);
-  state.asarIndex = Math.min(state.currentRecord.tests.asar.length, state.configs.asar.questions.length - 1);
+  if (!state.currentRecord.tests.asrs && state.currentRecord.tests.asar) {
+    state.currentRecord.tests.asrs = state.currentRecord.tests.asar;
+  }
+  state.asrsIndex = Math.min(getAsrsAnswers(state.currentRecord).length, state.configs.asrs.questions.length - 1);
   state.dsmIndex = Math.min(state.currentRecord.tests.dsm5.length, state.configs.dsm.questions.length - 1);
   setStatus(`${fileName} 불러오기 완료`);
-  navTo(state.currentRecord.currentStep || "id");
+  navTo(normalizeCurrentStep(state.currentRecord.currentStep || "id"));
 }
 
 async function submitManualLoad(event) {
   event.preventDefault();
-  if (!state.manualFileName) {
-    setStatus("불러올 파일명을 입력해 주세요.");
+  if (!state.loadUserId) {
+    setStatus("불러올 ID를 입력해 주세요.");
     return;
   }
-  await handleLoadRecord(state.manualFileName);
+
+  const record = findLatestRecordById(state.loadUserId);
+  if (!record) {
+    setStatus("해당 ID의 저장 기록을 찾지 못했습니다.");
+    return;
+  }
+
+  await handleLoadRecord(record.fileName);
 }
 
-async function answerAsar(value) {
-  const question = state.configs.asar.questions[state.asarIndex];
-  state.currentRecord.tests.asar[state.asarIndex] = {
-    question,
+function toggleExistingIdForm() {
+  state.showExistingIdForm = !state.showExistingIdForm;
+  render();
+}
+
+function openAdminModal() {
+  state.showAdminModal = true;
+  render();
+}
+
+function closeAdminModal() {
+  state.showAdminModal = false;
+  render();
+}
+
+async function answerAsrs(value) {
+  const question = state.configs.asrs.questions[state.asrsIndex];
+  if (!state.currentRecord.tests.asrs) {
+    state.currentRecord.tests.asrs = getAsrsAnswers();
+  }
+  state.currentRecord.tests.asrs[state.asrsIndex] = {
+    prompt: question.prompt,
+    examples: question.examples,
     answer: value
   };
-  state.currentRecord.currentStep = "asar";
+  state.currentRecord.currentStep = "asrs";
   await persistRecord();
+  render();
+}
 
-  if (state.asarIndex < state.configs.asar.questions.length - 1) {
-    state.asarIndex += 1;
+async function goToNextAsrsQuestion() {
+  const currentAnswer = getAsrsAnswers()?.[state.asrsIndex]?.answer;
+  if (!Number.isFinite(Number(currentAnswer))) {
+    setStatus("척도를 선택한 뒤 다음으로 진행해 주세요.");
+    return;
+  }
+
+  if (state.asrsIndex < state.configs.asrs.questions.length - 1) {
+    state.asrsIndex += 1;
+    state.currentRecord.currentStep = "asrs";
+    await persistRecord();
   } else {
-    state.route = "dsm";
+    state.currentRecord.currentStep = "asrs-result";
+    await persistRecord();
+    state.route = "asrs-result";
+    await ensureAsrsAnalysis();
   }
   render();
 }
@@ -251,6 +374,39 @@ async function generateReportAndPlan() {
   }
 }
 
+async function generateAsrsAnalysis() {
+  if (!state.currentRecord) {
+    return;
+  }
+
+  state.isGeneratingAsrsAnalysis = true;
+  render();
+
+  try {
+    const analysis = analyzeAsrs();
+    const result = await api("/api/ai/asrs-analysis", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        record: state.currentRecord,
+        analysis
+      })
+    });
+
+    state.currentRecord.asrsAnalysis = result;
+    await persistRecord();
+  } finally {
+    state.isGeneratingAsrsAnalysis = false;
+    render();
+  }
+}
+
+async function ensureAsrsAnalysis() {
+  if (!state.currentRecord?.asrsAnalysis?.summary && !state.isGeneratingAsrsAnalysis) {
+    await generateAsrsAnalysis();
+  }
+}
+
 async function ensureInsights() {
   if (!state.currentRecord?.report || !state.currentRecord?.plan?.suggestions?.length) {
     setStatus("Gemini로 리포트와 계획을 생성하는 중입니다.");
@@ -303,9 +459,10 @@ function render() {
 }
 
 function renderNav() {
+  const activeRoute = state.route === "asrs-result" ? "asrs" : state.route;
   bottomNav.innerHTML = routes
     .map((route) => {
-      const active = state.route === route.key ? "active" : "";
+      const active = activeRoute === route.key ? "active" : "";
       return `
         <a href="#" class="nav-item ${active}" data-route="${route.key}">
           <span class="material-symbols-outlined">${route.icon}</span>
@@ -333,23 +490,23 @@ const pages = {
     return `
       <section class="page">
         <div class="hero-card stack-lg">
-          <div class="eyebrow">focus screening</div>
-          <div class="stack-md">
-            <h2 class="title-xl">ADHD 선별과 감별을 위한 모바일 흐름을 <span style="color:#ffacea">soul.ai.kr</span>에서 시작합니다.</h2>
-            <p class="muted">ASAR 5점 척도, DSM-5 예/아니오 문항, 추후 확장할 미니 게임, 분석 리포트, 개선 계획까지 한 흐름으로 연결됩니다.</p>
+          <div class="flex items-center justify-end">
+            <button class="button-ghost" type="button" id="open-admin-modal" style="padding:0.55rem 0.9rem;font-size:0.8rem">ADMIN</button>
           </div>
-          <div class="grid-2">
-            <div class="list-card">
-              <strong>저장 구조</strong>
-              <span class="muted">각 사용자는 id-생성날짜.json 파일로 database 폴더에 저장됩니다.</span>
-            </div>
-            <div class="list-card">
-              <strong>현재 구현</strong>
-              <span class="muted">${state.aiStatus?.configured ? `Gemini ${escapeHtml(state.aiStatus.model)}가 연결되어 리포트와 계획 문장을 생성합니다.` : "Gemini API 키가 설정되지 않아 AI 생성이 비활성화되어 있습니다."}</span>
-            </div>
+          <div class="stack-md">
+            <h2 class="title-xl">ADHD 선별과 감별 <span style="color:#ffacea">soul.ai.kr</span></h2>
+            <p class="muted">ASRS, DSM-5, 반응성 테스트를 통해 ADHD유형을 분석합니다.</p>
+          </div>
+          <div class="panel" style="padding:0;overflow:hidden">
+            <img
+              src="/intro.png"
+              alt="soul.ai.kr intro"
+              style="display:block;width:100%;height:auto;max-height:52vh;object-fit:contain;background:#1b1b1b"
+            />
           </div>
           <button class="button-secondary" data-route-next="id">평가 시작하기</button>
         </div>
+        ${state.showAdminModal ? renderAdminModal() : ""}
       </section>
     `;
   },
@@ -358,20 +515,17 @@ const pages = {
     return `
       <section class="page">
         <div class="hero-card stack-lg">
-          <div class="eyebrow">identity</div>
           <div class="stack-sm">
-            <h2 class="title-lg">새로운 ID를 만들거나 기존 JSON 기록을 불러오세요.</h2>
-            <p class="muted">생성 즉시 database 폴더에 저장되며, 각 단계 결과가 같은 파일에 누적됩니다.</p>
+            <h2 class="title-lg">평가를 시작할 ID를 선택하세요.</h2>
+            <p class="muted">새 ID를 만들거나, 기존 ID의 가장 최근 기록을 불러올 수 있습니다.</p>
           </div>
-        </div>
 
-        ${state.statusMessage ? `<div class="panel">${state.statusMessage}</div>` : ""}
+          ${state.statusMessage ? `<div class="panel">${state.statusMessage}</div>` : ""}
 
-        <div class="grid-2">
           <form id="create-id-form" class="panel stack-md">
             <div class="stack-sm">
               <div class="eyebrow">new soul id</div>
-              <h3 class="title-lg">새 사용자 생성</h3>
+              <h3 class="title-lg">새 ID 만들기</h3>
             </div>
             <div class="field">
               <label for="user-id">사용자 ID</label>
@@ -385,74 +539,126 @@ const pages = {
               <div class="eyebrow">resume</div>
               <h3 class="title-lg">기존 기록 불러오기</h3>
             </div>
-            <form id="manual-load-form" class="stack-sm">
-              <div class="field">
-                <label for="file-name">파일명 직접 입력</label>
-                <input id="file-name" name="fileName" class="text-input" value="${escapeHtml(state.manualFileName)}" placeholder="예: minsu01-20260402-081500.json" />
-              </div>
-              <button class="button-ghost" type="submit">파일명으로 불러오기</button>
-            </form>
-          </div>
-        </div>
-
-        <div class="panel stack-md">
-          <div class="stack-sm">
-            <div class="eyebrow">database</div>
-            <h3 class="title-lg">저장된 사용자 목록</h3>
-          </div>
-          <div class="stack-sm">
-            ${state.records.length
-              ? state.records.map((record) => `
-                <div class="record-item">
-                  <div class="stack-sm">
-                    <strong>${record.id}</strong>
-                    <span class="muted">${record.fileName}</span>
-                    <span class="muted">생성 ${formatDate(record.createdAt)} · 현재 단계 ${record.currentStep}</span>
-                  </div>
-                  <button class="button-ghost load-record" data-file="${record.fileName}">불러오기</button>
+            <button class="button-ghost" type="button" id="toggle-existing-id-form">기존 기록 불러오기</button>
+            ${state.showExistingIdForm ? `
+              <form id="manual-load-form" class="stack-sm">
+                <div class="field">
+                  <label for="existing-user-id">기존 ID 입력</label>
+                  <input id="existing-user-id" name="userId" class="text-input" value="${escapeHtml(state.loadUserId)}" placeholder="예: minsu01" />
                 </div>
-              `).join("")
-              : `<div class="list-card"><span class="muted">아직 저장된 기록이 없습니다.</span></div>`}
+                <button class="button-secondary" type="submit">이 ID로 이동</button>
+              </form>
+            ` : ""}
           </div>
         </div>
       </section>
     `;
   },
 
-  asar() {
-    const config = state.configs.asar;
-    const progress = ((state.asarIndex + 1) / config.questions.length) * 100;
-    const currentAnswer = state.currentRecord?.tests.asar?.[state.asarIndex]?.answer;
+  asrs() {
+    const config = state.configs.asrs;
+    const progress = ((state.asrsIndex + 1) / config.questions.length) * 100;
+    const currentQuestion = config.questions[state.asrsIndex];
+    const currentAnswer = getAsrsAnswers()?.[state.asrsIndex]?.answer;
+    const currentImage = `/asrs${String(state.asrsIndex + 1).padStart(2, "0")}.png`;
     return `
       <section class="page">
         <div class="panel stack-md">
           <div class="stack-sm">
-            <div class="eyebrow">asar test</div>
             <div class="flex items-end justify-between gap-4">
               <div>
-                <h2 class="title-lg">${config.title}</h2>
+                <h2 class="title-lg asrs-title">${config.title}<span class="muted asrs-title-sub">(Adult ADHD Self-Report Scale)</span></h2>
                 <p class="muted">${config.description}</p>
               </div>
-              <div class="eyebrow">${state.asarIndex + 1} / ${config.questions.length}</div>
             </div>
           </div>
           <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
         </div>
 
         <div class="hero-card stack-lg">
-          <p class="title-lg" style="font-size:clamp(1.5rem,5vw,2.3rem)">${config.questions[state.asarIndex]}</p>
-          <div class="question-scale">
+          <p class="asrs-question">${currentQuestion.prompt}</p>
+          <div class="panel asrs-image-panel">
+            <img class="asrs-image" src="${currentImage}" alt="ASRS question ${state.asrsIndex + 1}" />
+          </div>
+          <div class="panel stack-sm">
+            <div class="eyebrow">예시</div>
+            <ul class="stack-sm">
+              ${currentQuestion.examples.map((example) => `<li class="muted">- ${example}</li>`).join("")}
+            </ul>
+          </div>
+          <div class="question-scale continuous">
             ${config.scale.map((item) => `
-              <button class="choice-button ${currentAnswer === item.value ? "selected" : ""}" data-asar-answer="${item.value}">
+              <button class="choice-button ${currentAnswer === item.value ? "selected" : ""}" data-asrs-answer="${item.value}">
                 <div class="choice-dot"><strong>${item.value}</strong></div>
                 <span class="choice-label">${item.label}</span>
               </button>
             `).join("")}
           </div>
-          <div class="two-actions">
-            <button class="button-ghost" ${state.asarIndex === 0 ? "disabled" : ""} data-asar-prev="true">이전 문항</button>
-            <button class="button-secondary" data-route-next="dsm">건너뛰고 다음 단계</button>
+          <button class="button-secondary safe-bottom-actions" id="asrs-next-button">${state.asrsIndex === config.questions.length - 1 ? "결과 보기" : "다음"}</button>
+        </div>
+      </section>
+    `;
+  },
+
+  "asrs-result"() {
+    const analysis = analyzeAsrs();
+    if (!state.currentRecord?.asrsAnalysis?.summary && !state.isGeneratingAsrsAnalysis && state.aiStatus?.configured) {
+      window.setTimeout(() => {
+        ensureAsrsAnalysis().catch((error) => setStatus(error.message));
+      }, 0);
+    }
+    return `
+      <section class="page">
+        <div class="hero-card stack-lg">
+          <div class="eyebrow">asrs quick analysis</div>
+          <p class="muted">${
+            state.isGeneratingAsrsAnalysis
+              ? "AI가 현재 점수 강도를 바탕으로 ASRS 결과를 해석하고 있습니다."
+              : state.currentRecord?.asrsAnalysis?.summary
+                ? state.currentRecord.asrsAnalysis.summary
+                : analysis.isComplete
+                  ? analysis.summary
+                  : "아직 6문항이 모두 입력되지는 않았습니다. 현재까지 입력된 응답을 기준으로 임시 해석을 보여드립니다."
+          }</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel stack-md">
+            <div class="eyebrow">screening signal</div>
+            <div class="flex items-end justify-between gap-4">
+              <strong style="font-size:1.8rem">${analysis.totalPositive} / 6</strong>
+              <span class="chip">${analysis.severity}</span>
+            </div>
+            <p class="muted">유의미 문항 기준: 1~3번은 2점 이상, 4~6번은 3점 이상</p>
           </div>
+          <div class="panel stack-md">
+            <div class="eyebrow">domain split</div>
+            <div class="report-item">
+              <div class="flex items-center justify-between gap-4">
+                <strong>주의력 결핍</strong>
+                <span class="chip">${analysis.attentionPositive} / 4</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${analysis.attentionPositive * 25}%"></div></div>
+            </div>
+            <div class="report-item">
+              <div class="flex items-center justify-between gap-4">
+                <strong>과잉행동·충동성</strong>
+                <span class="chip">${analysis.hyperPositive} / 2</span>
+              </div>
+              <div class="progress-bar"><div class="progress-fill" style="width:${analysis.hyperPositive * 50}%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel stack-md">
+          <div class="eyebrow">summary</div>
+          <p class="muted">${state.currentRecord?.asrsAnalysis?.attention || analysis.attentionMessage}</p>
+          <p class="muted">${state.currentRecord?.asrsAnalysis?.hyperactivity || analysis.hyperMessage}</p>
+          <p class="muted">${state.currentRecord?.asrsAnalysis?.guidance || analysis.guidance}</p>
+        </div>
+
+        <div class="two-actions safe-bottom-actions">
+          <button class="button-secondary" data-route-next="dsm">DSM-5 계속하기</button>
         </div>
       </section>
     `;
@@ -639,6 +845,36 @@ function scoreLabel(key) {
   return map[key] || key;
 }
 
+function renderAdminModal() {
+  return `
+    <div class="panel" style="position:fixed;inset:0;background:rgba(0,0,0,0.58);display:flex;align-items:center;justify-content:center;padding:1rem;z-index:30">
+      <div class="panel stack-md" style="width:min(720px,100%);max-height:80vh;overflow:auto;background:#1b1b1b">
+        <div class="flex items-center justify-between gap-4">
+          <div class="stack-sm">
+            <div class="eyebrow">admin</div>
+            <h3 class="title-lg">저장된 사용자 목록</h3>
+          </div>
+          <button class="button-ghost" type="button" id="close-admin-modal">닫기</button>
+        </div>
+        <div class="stack-sm">
+          ${state.records.length
+            ? state.records.map((record) => `
+              <div class="record-item">
+                <div class="stack-sm">
+                  <strong>${record.id}</strong>
+                  <span class="muted">${record.fileName}</span>
+                  <span class="muted">생성 ${formatDate(record.createdAt)} · 현재 단계 ${normalizeCurrentStep(record.currentStep)}</span>
+                </div>
+                <button class="button-ghost load-record" data-file="${record.fileName}">불러오기</button>
+              </div>
+            `).join("")
+            : `<div class="list-card"><span class="muted">아직 저장된 기록이 없습니다.</span></div>`}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 function renderRadar(scores, labels) {
   const values = [
     scores.attention,
@@ -690,6 +926,7 @@ function bindPageEvents() {
       if (route === "report" || route === "plan") {
         await ensureInsights();
       }
+      await syncCurrentStep(route);
       navTo(route);
     });
   });
@@ -699,25 +936,37 @@ function bindPageEvents() {
   });
 
   document.querySelector("#manual-load-form")?.addEventListener("submit", (event) => {
-    state.manualFileName = new FormData(event.currentTarget).get("fileName");
+    state.loadUserId = new FormData(event.currentTarget).get("userId");
     submitManualLoad(event).catch((error) => setStatus(error.message));
+  });
+
+  document.querySelector("#toggle-existing-id-form")?.addEventListener("click", () => {
+    toggleExistingIdForm();
+  });
+
+  document.querySelector("#open-admin-modal")?.addEventListener("click", () => {
+    openAdminModal();
+  });
+
+  document.querySelector("#close-admin-modal")?.addEventListener("click", () => {
+    closeAdminModal();
   });
 
   document.querySelectorAll(".load-record").forEach((node) => {
     node.addEventListener("click", () => {
+      closeAdminModal();
       handleLoadRecord(node.getAttribute("data-file")).catch((error) => setStatus(error.message));
     });
   });
 
-  document.querySelectorAll("[data-asar-answer]").forEach((node) => {
+  document.querySelectorAll("[data-asrs-answer]").forEach((node) => {
     node.addEventListener("click", () => {
-      answerAsar(Number(node.getAttribute("data-asar-answer"))).catch((error) => setStatus(error.message));
+      answerAsrs(Number(node.getAttribute("data-asrs-answer"))).catch((error) => setStatus(error.message));
     });
   });
 
-  document.querySelector("[data-asar-prev='true']")?.addEventListener("click", () => {
-    state.asarIndex = Math.max(0, state.asarIndex - 1);
-    render();
+  document.querySelector("#asrs-next-button")?.addEventListener("click", () => {
+    goToNextAsrsQuestion().catch((error) => setStatus(error.message));
   });
 
   document.querySelectorAll("[data-dsm-answer]").forEach((node) => {

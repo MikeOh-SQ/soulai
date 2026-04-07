@@ -6,7 +6,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PID_FILE="$ROOT_DIR/.server.pid"
 LOG_FILE="$ROOT_DIR/server.log"
 HOST="${HOST:-0.0.0.0}"
-PORT="${PORT:-3000}"
+PORT="${PORT:-3333}"
 
 if [[ -f "$PID_FILE" ]]; then
   EXISTING_PID="$(cat "$PID_FILE")"
