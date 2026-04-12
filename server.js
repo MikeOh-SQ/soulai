@@ -21,6 +21,7 @@ const mimeTypes = {
   ".js": "application/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".svg": "image/svg+xml",
+  ".gif": "image/gif",
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
@@ -138,15 +139,75 @@ function clamp(value, min, max) {
 }
 
 function getAsrsResponses(record) {
-  return record.tests?.asrs || record.tests?.asar || [];
+  const raw = record.tests?.asrs || record.tests?.asar || [];
+  if (Array.isArray(raw)) {
+    return raw.map((item) => (typeof item === "number" ? item : Number(item?.answer))).filter((value) => Number.isFinite(value));
+  }
+  if (Array.isArray(raw?.responses)) {
+    return raw.responses.map((item) => Number(item)).filter((value) => Number.isFinite(value));
+  }
+  return [];
+}
+
+function getDsmResponses(record) {
+  const raw = record.tests?.dsm5 || [];
+  if (Array.isArray(raw)) {
+    return raw.map((item) => (typeof item === "boolean" ? item : item?.answer)).filter((value) => typeof value === "boolean");
+  }
+  if (Array.isArray(raw?.responses)) {
+    return raw.responses.filter((value) => typeof value === "boolean");
+  }
+  return [];
+}
+
+function analyzeDsmRecord(record) {
+  const raw = record.tests?.dsm5;
+  if (raw && !Array.isArray(raw) && typeof raw === "object") {
+    const answeredCount = Array.isArray(raw.responses)
+      ? raw.responses.filter((value) => typeof value === "boolean").length
+      : Number(raw.inattention_true_count || 0) + Number(raw.hyperactivity_true_count || 0);
+    return {
+      answeredCount,
+      inattentionYesCount: Number(raw.inattention_true_count || 0),
+      hyperactivityYesCount: Number(raw.hyperactivity_true_count || 0),
+      contextualYesCount: Number(raw.contextual_true_count || 0),
+      totalYesCount: Number(raw.total_true_count || 0),
+      subtype: raw.subtype || "판정 보류"
+    };
+  }
+
+  const dsmAnswers = record.tests?.dsm5 || [];
+  const answered = dsmAnswers.filter((item) => typeof item?.answer === "boolean");
+  const inattentionYesCount = answered.slice(0, 9).filter((item) => item.answer).length;
+  const hyperactivityYesCount = answered.slice(9).filter((item) => item.answer).length;
+  const contextualYesCount = answered.slice(18).filter((item) => item.answer).length;
+
+  let subtype = "판정 보류";
+  if (answered.length >= 18) {
+    if (inattentionYesCount >= 6 && hyperactivityYesCount >= 6) {
+      subtype = "복합형 가능성";
+    } else if (inattentionYesCount >= 6) {
+      subtype = "부주의형 가능성";
+    } else if (hyperactivityYesCount >= 6) {
+      subtype = "과잉행동/충동형 가능성";
+    } else {
+      subtype = "무증상 범위";
+    }
+  }
+
+  return {
+    answeredCount: answered.length,
+    inattentionYesCount,
+    hyperactivityYesCount,
+    contextualYesCount,
+    totalYesCount: answered.filter((item) => item.answer).length,
+    subtype
+  };
 }
 
 function computeAssessmentMetrics(record) {
-  const asrsAnswers = getAsrsResponses(record)
-    .map((item) => Number(item.answer))
-    .filter((value) => Number.isFinite(value));
-  const dsmAnswers = (record.tests?.dsm5 || [])
-    .map((item) => Boolean(item.answer));
+  const asrsAnswers = getAsrsResponses(record);
+  const dsm = analyzeDsmRecord(record);
 
   const asrsAverage = asrsAnswers.length
     ? asrsAnswers.reduce((sum, value) => sum + value, 0) / asrsAnswers.length
@@ -160,17 +221,17 @@ function computeAssessmentMetrics(record) {
     return answer >= threshold;
   }).length;
   const impulsePositiveCount = asrsAnswers.slice(4).filter((answer) => answer >= 3).length;
-  const dsmYesCount = dsmAnswers.filter(Boolean).length;
+  const dsmYesCount = dsm.totalYesCount;
 
   const attention = clamp(92 - attentionPositiveCount * 14 - asrsAverage * 6, 20, 95);
   const executive = clamp(90 - attentionPositiveCount * 15 - asrsAverage * 7, 18, 92);
-  const impulse = clamp(88 - impulsePositiveCount * 18 - dsmYesCount * 5, 20, 90);
-  const emotion = clamp(84 - dsmYesCount * 5 - impulsePositiveCount * 8 - asrsAverage * 3, 18, 88);
+  const impulse = clamp(88 - impulsePositiveCount * 18 - dsm.hyperactivityYesCount * 7 - dsmYesCount * 2, 20, 90);
+  const emotion = clamp(84 - dsmYesCount * 4 - impulsePositiveCount * 8 - asrsAverage * 3, 18, 88);
   const structure = clamp(88 - attentionPositiveCount * 12 - asrsAverage * 6, 20, 90);
 
-  const severity = asrsPositiveCount >= 4 || dsmYesCount >= 5
+  const severity = asrsPositiveCount >= 4 || dsm.inattentionYesCount >= 6 || dsm.hyperactivityYesCount >= 6 || dsmYesCount >= 8
     ? "높음"
-    : asrsPositiveCount >= 2 || dsmYesCount >= 3
+    : asrsPositiveCount >= 2 || dsmYesCount >= 4
       ? "중간"
       : "낮음";
 
@@ -180,6 +241,10 @@ function computeAssessmentMetrics(record) {
     attentionPositiveCount,
     hyperactivityPositiveCount: impulsePositiveCount,
     dsmYesCount,
+    dsmInattentionYesCount: dsm.inattentionYesCount,
+    dsmHyperactivityYesCount: dsm.hyperactivityYesCount,
+    dsmContextualYesCount: dsm.contextualYesCount || 0,
+    dsmSubtype: dsm.subtype,
     severity,
     scores: {
       attention,
@@ -266,6 +331,12 @@ function buildInsightsPrompt(record, metrics) {
     "- 유의미한 문항이 4개 이상이면 성인 ADHD 가능성이 비교적 높은 편으로 해석",
     "- 주의력 결핍 관련 문항: 1, 2, 3, 4번",
     "- 과잉행동/충동성 관련 문항: 5, 6번",
+    "DSM-5 선별 기준:",
+    "- 총 18문항, 부주의 9문항과 과잉행동/충동성 9문항으로 구성",
+    "- 부주의 6개 이상 Yes, 과잉행동/충동성 6개 미만 Yes면 부주의형 가능성",
+    "- 과잉행동/충동성 6개 이상 Yes, 부주의 6개 미만 Yes면 과잉행동/충동형 가능성",
+    "- 두 영역 모두 6개 이상 Yes면 복합형 가능성",
+    "- 본 결과는 진단이 아니라 참고용 선별 결과로만 설명",
     "대상 기록 JSON:",
     JSON.stringify(record, null, 2),
     "계산된 핵심 지표:",
