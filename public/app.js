@@ -18,7 +18,8 @@ const state = {
   showJsonModal: false,
   jsonModalContent: "",
   statusMessage: "",
-  gameUi: null
+  gameUi: null,
+  reportProfileTab: "inattention"
 };
 
 const routes = [
@@ -449,22 +450,68 @@ function summarizeGameForStorage(record = state.currentRecord) {
   }
 
   const compactTests = Object.fromEntries(
-    Object.entries(game.tests || {}).map(([key, value]) => [
-      key,
-      value && Number.isFinite(value.score) ? { score: value.score } : null
-    ])
+    Object.entries(game.tests || {}).map(([key, value]) => {
+      if (!value || typeof value !== "object") {
+        return [key, null];
+      }
+
+      return [key, {
+        test_type: value.test_type || key,
+        mode: value.mode || "assessment",
+        score: Number.isFinite(value.score) ? value.score : null,
+        interpretation: value.interpretation || "",
+        ...(key === "signal_detection" ? {
+          target_count: value.target_count ?? null,
+          hit_count: value.hit_count ?? null,
+          omission_errors: value.omission_errors ?? null,
+          false_alarm_count: value.false_alarm_count ?? null,
+          omission_rate: value.omission_rate ?? null,
+          mean_reaction_time: value.mean_reaction_time ?? null,
+          reaction_time_variability: value.reaction_time_variability ?? null,
+          late_response_count: value.late_response_count ?? null
+        } : {}),
+        ...(key === "go_nogo" ? {
+          go_count: value.go_count ?? null,
+          nogo_count: value.nogo_count ?? null,
+          go_hit_count: value.go_hit_count ?? null,
+          go_omission_count: value.go_omission_count ?? null,
+          commission_errors: value.commission_errors ?? null,
+          successful_stop_count: value.successful_stop_count ?? null,
+          false_stop_count: value.false_stop_count ?? null,
+          late_stop_count: value.late_stop_count ?? null,
+          mean_go_reaction_time: value.mean_go_reaction_time ?? null,
+          mean_stop_latency: value.mean_stop_latency ?? null,
+          premature_response_count: value.premature_response_count ?? null,
+          post_error_slowing: value.post_error_slowing ?? null,
+          inhibition_failure_rate: value.inhibition_failure_rate ?? null,
+          hold_success_rate: value.hold_success_rate ?? null
+        } : {}),
+        ...(key === "balance_hold" ? {
+          stable_hold_time: value.stable_hold_time ?? null,
+          drift_distance: value.drift_distance ?? null,
+          movement_variability: value.movement_variability ?? null,
+          large_motion_count: value.large_motion_count ?? null,
+          correction_count: value.correction_count ?? null,
+          inside_target_ratio: value.inside_target_ratio ?? null,
+          input_source: value.input_source ?? null
+        } : {})
+      }];
+    })
   );
 
   return {
     status: game.status || "pending",
+    mode: game.mode || "assessment",
     currentTestIndex: game.currentTestIndex || 0,
     currentTestKey: game.currentTestKey || GAME_ORDER[0],
     tests: compactTests,
-    summary: {
+    summary: game.summary || {
       inattention_signal_score: game.summary?.inattention_signal?.score ?? null,
       impulsivity_signal_score: game.summary?.impulsivity_signal?.score ?? null,
       activity_signal_score: game.summary?.activity_signal?.score ?? null
-    }
+    },
+    startedAt: game.startedAt || null,
+    completedAt: game.completedAt || null
   };
 }
 
@@ -605,6 +652,9 @@ async function handleLoadRecord(fileName) {
   state.dsmIndex = Math.min(getDsmAnswers(state.currentRecord).length, state.configs.dsm.questions.length - 1);
   setStatus(`${fileName} 불러오기 완료`);
   navTo(normalizeCurrentStep(state.currentRecord.currentStep || "id"));
+  if (["report", "plan"].includes(normalizeCurrentStep(state.currentRecord.currentStep || "id"))) {
+    ensureInsights().catch((error) => setStatus(error.message));
+  }
 }
 
 async function submitManualLoad(event) {
@@ -1742,10 +1792,136 @@ async function ensureAsrsAnalysis() {
 }
 
 async function ensureInsights() {
-  if (!state.currentRecord?.report || !state.currentRecord?.plan?.suggestions?.length) {
+  if (!state.currentRecord?.report || state.currentRecord.report.schemaVersion !== 2 || !state.currentRecord?.plan?.suggestions?.length) {
     setStatus("Gemini로 리포트와 계획을 생성하는 중입니다.");
     await generateReportAndPlan();
   }
+}
+
+function toPercent(value, total) {
+  if (!total) {
+    return 0;
+  }
+  return Math.round((value / total) * 100);
+}
+
+function hasStoredNumber(value) {
+  return Number.isFinite(Number(value));
+}
+
+function displayMetric(value, suffix = "") {
+  return hasStoredNumber(value) ? `${value}${suffix}` : "정보 없음";
+}
+
+function getDsmImageSrc(index) {
+  return `/dsmimages/d${index + 1}.png`;
+}
+
+function computeLocalReportViewModel(record = state.currentRecord) {
+  const report = record?.report || {};
+  const asrs = analyzeAsrs(record);
+  const dsm = analyzeDsm(record);
+  const game = getGameState(record);
+  const signal = game?.tests?.signal_detection || {};
+  const goNogo = game?.tests?.go_nogo || {};
+  const reactionSummary = summarizeReactivity(record);
+  const asrsAnswers = getAsrsAnswers(record)
+    .map((item) => Number(item.answer))
+    .filter((value) => Number.isFinite(value));
+  const asrsAttentionScore = asrsAnswers.slice(0, 4).reduce((sum, value) => sum + value, 0);
+  const asrsImpulseScore = asrsAnswers.slice(4, 6).reduce((sum, value) => sum + value, 0);
+  const signalHasDetail = hasStoredNumber(signal.omission_rate) || (hasStoredNumber(signal.omission_errors) && hasStoredNumber(signal.target_count));
+  const goNogoHasDetail = hasStoredNumber(goNogo.inhibition_failure_rate) || (hasStoredNumber(goNogo.commission_errors) && hasStoredNumber(goNogo.nogo_count));
+  const omissionRate = signalHasDetail
+    ? Number((signal.omission_rate ?? (Number(signal.omission_errors || 0) / Math.max(Number(signal.target_count || 0), 1))).toFixed(2))
+    : null;
+  const commissionRate = goNogoHasDetail
+    ? Number((goNogo.inhibition_failure_rate ?? (Number(goNogo.commission_errors || 0) / Math.max(Number(goNogo.nogo_count || 0), 1))).toFixed(2))
+    : null;
+  const reactionVariability = hasStoredNumber(signal.reaction_time_variability) ? Number(signal.reaction_time_variability) : null;
+  const subjectiveDomain = asrs.attentionPositive >= asrs.hyperPositive ? "부주의" : "충동성";
+  const objectiveDomain = signalHasDetail || goNogoHasDetail
+    ? ((omissionRate || 0) >= (commissionRate || 0) ? "부주의" : "충동성")
+    : ((signal.score || 0) <= (goNogo.score || 0) ? "부주의" : "충동성");
+  const alignment = subjectiveDomain === objectiveDomain ? "일치" : "불일치";
+  const dailyImpactLevel = report.dailyImpact?.level
+    || Math.max(1, Math.min(5, Math.ceil((dsm.inattentionYes + dsm.hyperactivityYes + dsm.contextualYes * 2) / 4) || 1));
+  const defaultBadges = [];
+
+  if (asrs.attentionPositive >= 2 || omissionRate >= 0.18) {
+    defaultBadges.push("#주의력충전필요");
+  }
+  if (asrs.hyperPositive >= 1 || commissionRate >= 0.18) {
+    defaultBadges.push("#반응조절연습중");
+  }
+  if ((reactionSummary?.activity_signal?.score || 0) >= 60) {
+    defaultBadges.push("#움직임에너지높음");
+  }
+  if (!defaultBadges.length) {
+    defaultBadges.push("#기본안정패턴");
+  }
+
+  const heroSummary = report.hero?.summary
+    || report.sections?.summary
+    || (alignment === "일치"
+      ? `설문과 반응성 검사 모두 ${subjectiveDomain} 쪽 신호가 비슷하게 관찰됐어요. 현재 패턴을 이해하고 생활 리듬에 맞는 조절 전략을 더해보면 도움이 될 수 있어요.`
+      : "설문에서 느끼는 어려움과 게임 기반 반응 패턴이 조금 다르게 보였어요. 상황과 환경에 따라 증상의 모습이 달라질 수 있다는 신호로 볼 수 있어요.");
+
+  return {
+    severity: report.severity || (asrs.totalPositive >= 4 || dsm.inattentionYes >= 6 || dsm.hyperactivityYes >= 6 ? "높음" : asrs.totalPositive >= 2 ? "중간" : "낮음"),
+    hero: {
+      badges: Array.isArray(report.hero?.badges) && report.hero.badges.length ? report.hero.badges : defaultBadges.slice(0, 3),
+      summary: heroSummary
+    },
+    crossCheck: {
+      subjectiveTitle: report.crossCheck?.subjectiveTitle || `주관적 보고는 ${subjectiveDomain} 쪽이 더 크게 느껴져요`,
+      subjectiveText: report.crossCheck?.subjectiveText || (subjectiveDomain === "부주의"
+        ? "ASRS 응답에서는 집중 유지, 시작 지연, 마감 관리와 같은 부주의 신호가 조금 더 강조됐어요."
+        : "ASRS 응답에서는 즉각 반응, 기다리기 어려움 같은 충동성 신호가 조금 더 강조됐어요."),
+      objectiveTitle: report.crossCheck?.objectiveTitle || `객관적 반응은 ${objectiveDomain} 쪽 신호가 더 보여요`,
+      objectiveText: report.crossCheck?.objectiveText || (objectiveDomain === "부주의"
+        ? "반응성 테스트에서는 목표를 놓치거나 반응시간이 흔들리는 패턴이 상대적으로 더 보였어요."
+        : "반응성 테스트에서는 누르면 안 되는 자극에 반응하는 패턴이 상대적으로 더 보였어요."),
+      alignmentLabel: report.crossCheck?.alignmentLabel || (alignment === "일치" ? "두 결과가 비슷해요" : "두 결과가 조금 달라요"),
+      alignmentSummary: report.crossCheck?.alignmentSummary || (alignment === "일치"
+        ? "스스로 느끼는 어려움과 검사에서 보인 패턴이 같은 방향을 가리켜요."
+        : "평소 체감과 검사 상황의 반응이 다르게 나타나서 환경 영향까지 함께 볼 필요가 있어요.")
+    },
+    profile: {
+      inattentionSummary: report.profile?.inattentionSummary || "부주의 영역은 ASRS 응답과 목표 놓침, 반응시간 변동성을 함께 봤을 때 현재 집중 유지의 일관성을 점검해 볼 필요가 있어 보여요.",
+      impulsivitySummary: report.profile?.impulsivitySummary || "충동성 영역은 ASRS 응답과 잘못된 반응 비율을 함께 봤을 때 속도보다 멈추는 조절을 연습하는 것이 도움이 될 수 있어요."
+    },
+    dailyImpact: {
+      level: dailyImpactLevel,
+      label: report.dailyImpact?.label || ["가벼운 피로", "조금 누적된 피로", "중간 수준의 부담", "지속적 소모가 큰 편", "상당한 에너지 소모"][dailyImpactLevel - 1],
+      empathy: report.dailyImpact?.empathy || dsm.detail
+    },
+    sections: {
+      strength: report.sections?.strength || "구조를 만들면 수행이 좋아질 여지가 있고, 관심이 생기는 과제에서는 몰입이 보호 요인으로 작동할 수 있어요.",
+      watchout: report.sections?.watchout || "이 결과는 선별용이므로 수면, 스트레스, 불안·우울 같은 다른 요인도 함께 살펴보는 것이 좋아요."
+    },
+    metrics: {
+      inattention: {
+        asrsScore: asrsAttentionScore,
+        asrsMax: 16,
+        omissionRate,
+        omissionPercent: omissionRate === null ? null : toPercent(omissionRate, 1),
+        reactionVariability,
+        variabilityPercent: reactionVariability === null ? null : Math.min(100, Math.round((reactionVariability / 300) * 100)),
+        signalScore: hasStoredNumber(signal.score) ? Number(signal.score) : null
+      },
+      impulsivity: {
+        asrsScore: asrsImpulseScore,
+        asrsMax: 8,
+        commissionRate,
+        commissionPercent: commissionRate === null ? null : toPercent(commissionRate, 1),
+        goNoGoScore: hasStoredNumber(goNogo.score) ? Number(goNogo.score) : null
+      }
+    },
+    bridge: {
+      cta: report.bridge?.cta || "나만의 맞춤 훈련 설계하기"
+    }
+  };
 }
 
 async function sendPlanChat(event) {
@@ -2226,13 +2402,13 @@ const pages = {
           </div>
           <div class="question-scale continuous">
             ${config.scale.map((item) => `
-              <button class="choice-button ${currentAnswer === item.value ? "selected" : ""}" data-asrs-answer="${item.value}">
+              <button class="choice-button ${currentAnswer === item.value ? "selected" : ""}" type="button" data-asrs-answer="${item.value}">
                 <div class="choice-dot"><strong>${item.value}</strong></div>
                 <span class="choice-label">${item.label}</span>
               </button>
             `).join("")}
           </div>
-          <button class="button-secondary safe-bottom-actions" id="asrs-next-button">${state.asrsIndex === config.questions.length - 1 ? "결과 보기" : "다음"}</button>
+          <button class="button-secondary safe-bottom-actions" type="button" id="asrs-next-button">${state.asrsIndex === config.questions.length - 1 ? "결과 보기" : "다음"}</button>
         </div>
       </section>
     `;
@@ -2323,11 +2499,14 @@ const pages = {
 
         <div class="hero-card stack-lg">
           <div class="eyebrow">${question.section}</div>
+          <div class="panel dsm-image-panel">
+            <img class="dsm-image" src="${getDsmImageSrc(state.dsmIndex)}" alt="DSM-5 question ${state.dsmIndex + 1}" />
+          </div>
           <p class="title-lg" style="font-size:clamp(1.5rem,5vw,2.3rem)">${question.prompt}</p>
           <p class="muted">${question.hint}</p>
           <div class="binary-grid">
-            <button class="binary-button ${currentAnswer === false ? "selected-no" : ""}" data-dsm-answer="false">No</button>
-            <button class="binary-button ${currentAnswer === true ? "selected-yes" : ""}" data-dsm-answer="true">Yes</button>
+            <button class="binary-button ${currentAnswer === false ? "selected-no" : ""}" type="button" data-dsm-answer="false">No</button>
+            <button class="binary-button ${currentAnswer === true ? "selected-yes" : ""}" type="button" data-dsm-answer="true">Yes</button>
           </div>
         </div>
       </section>
@@ -2339,9 +2518,8 @@ const pages = {
   },
 
   report() {
-    const report = state.currentRecord?.report;
-    const dsm = analyzeDsm();
-    if (state.isGeneratingInsights || !report) {
+    const hasReport = Boolean(state.currentRecord?.report) && state.currentRecord.report.schemaVersion === 2;
+    if (state.isGeneratingInsights || !hasReport) {
       return `
         <section class="page">
           <div class="panel stack-md">
@@ -2352,62 +2530,134 @@ const pages = {
         </section>
       `;
     }
+    const report = computeLocalReportViewModel();
+    const activeTab = state.reportProfileTab === "impulsivity" ? "impulsivity" : "inattention";
+    const profileMetric = activeTab === "inattention" ? report.metrics.inattention : report.metrics.impulsivity;
     return `
       <section class="page">
-        <div class="hero-card stack-lg">
-          <div class="eyebrow">analysis report</div>
+        <div class="hero-card stack-lg report-hero-card">
+          <div class="eyebrow">hero summary</div>
           <div class="stack-sm">
-            <h2 class="title-lg">${state.currentRecord.id}의 현재 선별 결과는 <span style="color:#ffacea">${report.severity}</span> 관심군입니다.</h2>
-            <p class="muted">${report.sections.summary}</p>
+            <div class="report-badge-row">
+              ${report.hero.badges.map((badge) => `<span class="chip">${badge}</span>`).join("")}
+            </div>
+            <h2 class="title-lg">${state.currentRecord.id}의 현재 신호는 <span style="color:#ffacea">${report.severity}</span> 관심군으로 정리돼요.</h2>
+            <p class="muted">${report.hero.summary}</p>
           </div>
         </div>
 
         <div class="panel stack-md">
-          <div class="eyebrow">dsm-5 summary</div>
-          <div class="flex items-center justify-between gap-4">
-            <strong>${dsm.subtype}</strong>
-            <span class="chip">부주의 ${dsm.inattentionYes} / 9 · 과잉행동 ${dsm.hyperactivityYes} / 9</span>
-          </div>
-          <p class="muted">${dsm.guidance}</p>
-        </div>
-
-        ${state.currentRecord?.tests?.game?.summary?.summary ? `
-          <div class="panel stack-md">
-            <div class="eyebrow">reactivity test</div>
-            <p class="muted">${state.currentRecord.tests.game.summary.summary}</p>
-          </div>
-        ` : ""}
-
-        <div class="grid-2">
-          <div class="panel stack-md">
-            <div class="eyebrow">radar graph</div>
-            <div class="radar-wrap">${renderRadar(report.scores, state.configs.report.radarAxes)}</div>
-          </div>
-          <div class="stack-md">
+          <div class="eyebrow">subjective vs objective</div>
+          <div class="grid-2">
             <div class="metric-card stack-sm">
-              <span class="eyebrow">강점 신호</span>
-              <p class="muted">${report.sections.strength}</p>
+              <span class="eyebrow">카드 A · 내가 느끼는 나</span>
+              <strong>${report.crossCheck.subjectiveTitle}</strong>
+              <p class="muted">${report.crossCheck.subjectiveText}</p>
             </div>
             <div class="metric-card stack-sm">
-              <span class="eyebrow">주의할 점</span>
-              <p class="muted">${report.sections.watchout}</p>
+              <span class="eyebrow">카드 B · 게임이 본 나</span>
+              <strong>${report.crossCheck.objectiveTitle}</strong>
+              <p class="muted">${report.crossCheck.objectiveText}</p>
             </div>
+          </div>
+          <div class="report-alignment-row">
+            <span class="chip chip-success">${report.crossCheck.alignmentLabel}</span>
+            <p class="muted">${report.crossCheck.alignmentSummary}</p>
           </div>
         </div>
 
-        <div class="panel report-list">
-          ${Object.entries(report.scores).map(([key, value]) => `
-            <div class="report-item">
-              <div class="flex items-center justify-between gap-4">
-                <strong>${scoreLabel(key)}</strong>
-                <span class="chip">${value} / 100</span>
+        <div class="panel stack-md">
+          <div class="eyebrow">cognitive profile</div>
+          <div class="report-tab-row">
+            <button class="button-ghost ${activeTab === "inattention" ? "report-tab-active" : ""}" type="button" data-report-tab="inattention">부주의 영역</button>
+            <button class="button-ghost ${activeTab === "impulsivity" ? "report-tab-active" : ""}" type="button" data-report-tab="impulsivity">충동성 영역</button>
+          </div>
+          ${activeTab === "inattention" ? `
+            <div class="stack-md">
+              <p class="muted">${report.profile.inattentionSummary}</p>
+              <div class="report-metric-grid">
+                <div class="report-item">
+                  <div class="flex items-center justify-between gap-4">
+                    <strong>ASRS 부주의 점수</strong>
+                    <span class="chip">${profileMetric.asrsScore} / ${profileMetric.asrsMax}</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${toPercent(profileMetric.asrsScore, profileMetric.asrsMax)}%"></div></div>
+                </div>
+                <div class="report-item">
+                  <div class="flex items-center justify-between gap-4">
+                    <strong>목표 놓침 비율</strong>
+                    <span class="chip">${displayMetric(profileMetric.omissionRate === null ? null : Math.round(profileMetric.omissionRate * 100), "%")}</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${profileMetric.omissionPercent ?? 0}%"></div></div>
+                </div>
+                <div class="report-item">
+                  <div class="flex items-center justify-between gap-4">
+                    <strong>반응시간 변동성</strong>
+                    <span class="chip">${displayMetric(profileMetric.reactionVariability, "ms")}</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${profileMetric.variabilityPercent ?? 0}%"></div></div>
+                </div>
+                <div class="report-item">
+                  <div class="flex items-center justify-between gap-4">
+                    <strong>신호 찾기 점수</strong>
+                    <span class="chip">${displayMetric(profileMetric.signalScore)}</span>
+                  </div>
+                </div>
               </div>
-              <div class="progress-bar"><div class="progress-fill" style="width:${value}%"></div></div>
             </div>
-          `).join("")}
+          ` : `
+            <div class="stack-md">
+              <p class="muted">${report.profile.impulsivitySummary}</p>
+              <div class="report-metric-grid">
+                <div class="report-item">
+                  <div class="flex items-center justify-between gap-4">
+                    <strong>ASRS 충동성 점수</strong>
+                    <span class="chip">${profileMetric.asrsScore} / ${profileMetric.asrsMax}</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${toPercent(profileMetric.asrsScore, profileMetric.asrsMax)}%"></div></div>
+                </div>
+                <div class="report-item">
+                  <div class="flex items-center justify-between gap-4">
+                    <strong>잘못된 반응 비율</strong>
+                    <span class="chip">${displayMetric(profileMetric.commissionRate === null ? null : Math.round(profileMetric.commissionRate * 100), "%")}</span>
+                  </div>
+                  <div class="progress-bar"><div class="progress-fill" style="width:${profileMetric.commissionPercent ?? 0}%"></div></div>
+                </div>
+                <div class="report-item">
+                  <div class="flex items-center justify-between gap-4">
+                    <strong>Go/No-Go 점수</strong>
+                    <span class="chip">${displayMetric(profileMetric.goNoGoScore)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `}
         </div>
 
-        <button class="button-secondary safe-bottom-actions" data-route-next="plan">개선 계획 보기</button>
+        <div class="panel stack-md">
+          <div class="eyebrow">daily impact</div>
+          <div class="flex items-center justify-between gap-4">
+            <strong>일상 피로도 ${report.dailyImpact.level} / 5</strong>
+            <span class="chip">${report.dailyImpact.label}</span>
+          </div>
+          <div class="daily-impact-gauge" aria-hidden="true">
+            ${Array.from({ length: 5 }, (_, index) => `
+              <span class="daily-impact-step ${index < report.dailyImpact.level ? "active" : ""}"></span>
+            `).join("")}
+          </div>
+          <p class="muted">${report.dailyImpact.empathy}</p>
+        </div>
+
+        <div class="panel stack-md">
+          <div class="eyebrow">bridge</div>
+          <div class="metric-card stack-sm">
+            <strong>다음 단계로 바로 연결해 볼까요?</strong>
+            <p class="muted">${report.sections.strength}</p>
+            <p class="muted">${report.sections.watchout}</p>
+          </div>
+        </div>
+
+        <button class="button-secondary safe-bottom-actions" data-route-next="plan">${report.bridge.cta}</button>
       </section>
     `;
   },
@@ -2614,12 +2864,14 @@ function bindPageEvents() {
   });
 
   document.querySelectorAll("[data-asrs-answer]").forEach((node) => {
-    node.addEventListener("click", () => {
+    node.addEventListener("click", (event) => {
+      event.preventDefault();
       answerAsrs(Number(node.getAttribute("data-asrs-answer"))).catch((error) => setStatus(error.message));
     });
   });
 
-  document.querySelector("#asrs-next-button")?.addEventListener("click", () => {
+  document.querySelector("#asrs-next-button")?.addEventListener("click", (event) => {
+    event.preventDefault();
     goToNextAsrsQuestion().catch((error) => setStatus(error.message));
   });
 
@@ -2666,6 +2918,13 @@ function bindPageEvents() {
       handleGoNoGoTap();
     });
   }
+
+  document.querySelectorAll("[data-report-tab]").forEach((node) => {
+    node.addEventListener("click", () => {
+      state.reportProfileTab = node.getAttribute("data-report-tab") || "inattention";
+      render();
+    });
+  });
 
   document.querySelector("#plan-chat-form")?.addEventListener("submit", (event) => {
     sendPlanChat(event).catch((error) => setStatus(error.message));

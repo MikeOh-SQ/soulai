@@ -483,6 +483,55 @@ body {
   background: #2a2a2a;
 }
 
+.report-hero-card {
+  background:
+    radial-gradient(circle at top left, rgba(246, 122, 223, 0.18), transparent 35%),
+    linear-gradient(180deg, rgba(42, 42, 42, 0.98), rgba(31, 31, 31, 0.98));
+}
+
+.report-badge-row,
+.report-tab-row,
+.report-alignment-row,
+.daily-impact-gauge,
+.report-metric-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.report-alignment-row {
+  align-items: center;
+}
+
+.report-tab-row .button-ghost {
+  flex: 1 1 140px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.report-tab-active {
+  background: rgba(246, 122, 223, 0.16);
+  color: #ffacea;
+}
+
+.report-metric-grid {
+  flex-direction: column;
+}
+
+.daily-impact-gauge {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.daily-impact-step {
+  height: 10px;
+  border-radius: 999px;
+  background: #2a2a2a;
+}
+
+.daily-impact-step.active {
+  background: linear-gradient(90deg, #c1d03f, #ffacea);
+}
+
 .chat-bubble.user {
   background: rgba(194, 193, 255, 0.18);
 }
@@ -527,6 +576,21 @@ body {
   width: 100%;
   height: auto;
   max-height: 220px;
+  object-fit: contain;
+  border-radius: 0.8rem;
+}
+
+.dsm-image-panel {
+  padding: 0.4rem;
+  overflow: hidden;
+  background: #242424;
+}
+
+.dsm-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 260px;
   object-fit: contain;
   border-radius: 0.8rem;
 }
