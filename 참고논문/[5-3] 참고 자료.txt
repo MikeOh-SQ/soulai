@@ -1,0 +1,7 @@
+[5-3] 참고 자료
+
+1.누락 오류를 부주의성 지표로, 오경보 오류를 충동성 지표로 리포트에 차용한 근거
+Acosta-López, J. E., Puentes-Rozo, P. J., Martínez-Banfi, M. L., Pineda, D. A., & Velez-van-Meerbeke, A. (2021). Impulsive and omission errors: Potential temporal processing endophenotypes in ADHD. Brain Sciences, 11(9), 1218. doi.org
+
+2.거절민감성과 ADHD 연관성
+Dodson, W. W., Modestino, E. J., Ceritoğlu, H. T., & Zayed, B. (2024). Rejection sensitivity dysphoria in attention-deficit/hyperactivity disorder: A case series. Neurology, 7, 23-30.

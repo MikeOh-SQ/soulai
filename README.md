@@ -1,4 +1,4 @@
-# soul.ai.kr
+# ADHDQQ.COM
 
 ADHD 선별/감별 보조를 위한 모바일 웹 앱 프로토타입입니다. 현재 흐름은 `intro -> id -> ASRS -> ASRS quick analysis -> DSM-5 -> reactivity tests -> report -> plan` 이며, 각 단계 결과는 사용자별 JSON 파일로 저장됩니다.
 
@@ -11,8 +11,8 @@ ADHD 선별/감별 보조를 위한 모바일 웹 앱 프로토타입입니다. 
 - DSM-5 23문항 yes/no 평가
 - DSM-5 문항별 이미지 표시 (`dsmimages/d1.png` ~ `d23.png`)
 - 반응성 테스트 3종
-- 테스트 1: 파란 별만 누르는 signal detection
-- 테스트 2: 낙하하는 동그라미는 누르고 엑스는 누르지 않는 go/no-go
+- 테스트 1: 자극이 사라진 뒤 짧은 입력 구간까지 허용하는 signal detection
+- 테스트 2: `o.gif`는 누르고 `x.gif`는 누르지 않는 go/no-go
 - 테스트 3: 센서 기반 균형 유지, 마우스/터치 fallback에서는 움직이는 목표 추적
 - 반응성 테스트 완료 후 통합 수치와 통합 해석 저장
 - 저장 JSON 기반 deterministic report 생성
@@ -43,21 +43,31 @@ ADHD 선별/감별 보조를 위한 모바일 웹 앱 프로토타입입니다. 
 
 - `react1/back.gif` 배경 위에 `0.gif`~`5.gif` 자극을 사용합니다.
 - `0.gif`는 정답 자극이며 나머지는 오답 자극입니다.
-- `idle.png`, `true.png`, `fail.png` 오버레이로 문제별 판정을 표시합니다.
-- 저장 JSON에는 점수뿐 아니라 `target_count`, `hit_count`, `omission_errors`, `false_alarm_count`, `omission_rate`, `mean_reaction_time`, `reaction_time_variability`, `late_response_count`가 들어갑니다.
+- 연습 6회, 본 시행 60회이며 자극 시간은 500ms, ISI는 1000/1250/1500ms 랜덤입니다.
+- 자극이 사라진 뒤에도 다음 자극 전까지 같은 시행 입력이 인정되며, 화면에는 `아직 입력 가능` 상태가 따로 표시됩니다.
+- `100ms` 미만 반응은 `anticipatory`로 저장되며 분석에서 제외합니다.
+- 저장 JSON에는 `omission_rate`, `reaction_time_variability`, `tau`, `late_phase_drop`, `anticipatory_count`, `raw_trials`, `validity`, `level_summary`가 함께 들어갑니다.
 
 ### Test 2. Go / No-Go
 
-- `react2/back.gif` 배경 위에 `o.gif`, `x.gif` 낙하 자극을 사용합니다.
-- 동그라미는 바닥 직전 성공 구간에 `TAP` 버튼을 눌러야 하고, 엑스는 끝까지 누르지 않아야 합니다.
-- `idle.png`, `true.png`, `fail.png` 오버레이로 문제별 판정을 표시합니다.
-- 저장 JSON에는 `go_count`, `nogo_count`, `go_hit_count`, `go_omission_count`, `commission_errors`, `successful_stop_count`, `false_stop_count`, `late_stop_count`, `mean_go_reaction_time`, `premature_response_count`, `inhibition_failure_rate`, `hold_success_rate` 등이 들어갑니다.
+- `react2/back.gif` 배경 위에 `o.gif`, `x.gif` 자극을 사용합니다.
+- `o.gif`는 누르고 `x.gif`는 누르지 않는 규칙이며, 연습 8회, 본 시행 50회입니다.
+- 자극 시간은 300ms, ISI는 800/1000/1200ms 랜덤입니다.
+- No-Go는 연속으로 2번 이상 나오지 않도록 배치합니다.
+- 저장 JSON에는 `commission_rate`, `fast_error_rate`, `mean_go_reaction_time`, `anticipatory_count`, `raw_trials`, `validity`, `level_summary.pattern`이 함께 들어갑니다.
 
 ### Test 3. Balance Hold / Tracking
 
 - 센서가 있으면 기존처럼 중심 유지 기반으로 측정합니다.
 - 센서가 없으면 마우스/터치 fallback에서 목표 원이 검사 내내 부드럽게 이동합니다.
-- 저장 JSON에는 `stable_hold_time`, `drift_distance`, `movement_variability`, `large_motion_count`, `correction_count`, `inside_target_ratio`, `input_source`가 들어갑니다.
+- 저장 JSON에는 `stable_hold_time`, `stable_duration_pct`, `spike_count`, `total_movement`, `raw_samples`, `validity`, `level_summary`가 들어갑니다.
+
+## Report Metrics
+
+- report 화면은 반응성 테스트 점수 대신 세부 지표를 직접 보여줍니다.
+- 부주의 탭: `목표 놓침 비율`, `반응시간 변동성`, `Tau`, `후반부 정확도 저하`
+- 충동성 탭: `잘못된 반응 비율`, `성급 반응 비율`, `Go 반응시간`, `반응 패턴`
+- 서버는 이 값들을 ASRS / DSM-5와 함께 읽어 `subjective vs objective`, `cognitive profile`, `daily impact` 문구를 생성합니다.
 
 ## Project Structure
 
@@ -142,6 +152,8 @@ npm start
 
 - [질문과해석.md](질문과해석.md): 저장 JSON 값과 해석 규칙
 - [전체프로세스.md](전체프로세스.md): 질문/저장 변수/AI 프롬프트/출력 흐름 설명
+- [반응성게임사양서.md](반응성게임사양서.md): 반응성 테스트 상세 사양
+- [구조설명.md](구조설명.md): 비전공자용 전체 구조 설명
 
 ## Notes
 

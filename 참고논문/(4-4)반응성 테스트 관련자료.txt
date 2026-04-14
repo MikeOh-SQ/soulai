@@ -1,0 +1,204 @@
+=====================================
+반응성 테스트 참조 논문 및 도서 (APA 7판)
+=====================================
+
+아래 참고문헌들은 반응성 테스트의 설계, 지표 선정, 해석 기준, 게이미피케이션 근거를 뒷받침합니다.
+각 문헌에 [앱에서 차용하는 내용]을 함께 기술하여, 어떤 부분이 어떤 근거에 기반하는지 추적 가능하도록 했습니다.
+
+
+---
+
+
+## 1. 반응성 테스트의 전체 설계 레퍼런스
+
+Ulberstad, F., Boström, H., Chavanon, M.-L., Freihaut, P., Hollis, C., Rommel, A.-S., Hall, C. L., & Liddle, E. B. (2020). Objective measurement of attention deficit hyperactivity disorder symptoms outside the clinic using the QbCheck: Reliability and validity. *International Journal of Methods in Psychiatric Research*, 29(3), e1821. https://doi.org/10.1002/mpr.1821
+
+  QbCheck는 집에서 수행 가능한 객관적 ADHD 평가 도구로,
+  CPT 과제와 웹캠 기반 움직임 측정을 결합하여
+  부주의, 충동성, 과잉행동을 수치화하였다.
+  ADHD 구분 정확도 81.0%, 민감도 82.6%, 특이도 79.5%.
+
+  [앱에서 차용하는 내용]
+  "설문 + 객관적 행동 데이터를 결합하면 더 입체적인 평가가 가능하다"는
+  앱 전체 구조의 직접적 근거.
+  테스트 1(CPT 기반), 테스트 3(움직임 측정)의 설계 모델.
+
+
+---
+
+
+## 2. 반응시간 변동성(RTV)과 Tau — 부주의 핵심 지표의 근거
+
+Tamm, L., Narad, M. E., Antonini, T. N., O'Brien, K. M., Hawk, L. W., Jr., & Epstein, J. N. (2012). Reaction time variability in ADHD: A review. *Neurotherapeutics*, 9(3), 500–508. https://doi.org/10.1007/s13311-012-0138-5
+
+  ADHD에서 평균 반응속도(Mean RT)보다 반응시간 변동성(RTV)이
+  더 민감한 지표임을 제시한 종합 리뷰.
+  반응시간 분포의 오른쪽 꼬리(Tau)가
+  주의 끊김(lapse of attention)을 반영하는 핵심 지표로 제시됨.
+
+  [앱에서 차용하는 내용]
+  · RTV(RTSD)와 Tau를 부주의 영역의 핵심 지표로 채택.
+  · 평가 기준: RTV 150ms(low), 250ms(high) 경계값 설정 근거.
+  · Tau 간편 계산법(상위 10% 평균 - 전체 평균) 적용.
+
+Kofler, M. J., Rapport, M. D., Sarver, D. E., Raiker, J. S., Orban, S. A., Friedman, L. M., & Kolomeyer, E. G. (2013). Reaction time variability in ADHD: A meta-analytic review of 319 studies. *Clinical Psychology Review*, 33(6), 795–811. https://doi.org/10.1016/j.cpr.2013.06.001
+
+  319개 연구를 메타분석하여 RTV가 ADHD의 안정적 특징(stable feature)임을 확인.
+  ADHD군은 평균 RT를 통제해도 RTV에서 유의한 차이를 보임.
+
+  [앱에서 차용하는 내용]
+  · RTV를 부주의 선별 보조 지표로 사용하는 타당성 근거.
+  · 시행 수 설정 근거: 대부분의 CPT 연구가 50~100시행 사용 → 60시행 채택.
+
+
+---
+
+
+## 3. 누락 오류·오경보 오류 — 부주의/충동성 구분의 근거
+
+Acosta-López, J. E., Suárez, I., Pineda, D. A., Cervantes-Henríquez, M. L., Martínez-Banfi, M. L., Lozano-Gutiérrez, S. G., Ahmad, M., Pineda-Alhucema, W., Noguera-Machacón, L. M., De La Hoz, M., Mejía-Segura, E., Jiménez-Figueroa, G., Sánchez-Rojas, M., Mastronardi, C. A., Arcos-Burgos, M., Vélez, J. I., & Puentes-Rozo, P. J. (2021). Impulsive and omission errors: Potential temporal processing endophenotypes in ADHD. *Brain Sciences*, 11(9), 1218. https://doi.org/10.3390/brainsci11091218
+
+  누락 오류(omission errors)는 부주의,
+  오경보 오류(commission errors)는 충동성의
+  내표형(endophenotype)이 될 수 있음을 제시.
+  이 오류 패턴을 포함한 예측 모델이 높은 정확도를 보임.
+
+  [앱에서 차용하는 내용]
+  · 누락 오류 → 부주의, 오경보 오류 → 충동성으로 매핑하는 직접적 근거.
+  · 통합 리포트에서 "목표 놓침(부주의)" / "잘못된 반응(충동성)"이라고
+    용어를 순화하여 사용하는 것의 학술적 기반.
+  · 누락 오류율 10%(low), 25%(high) 경계값 설정 참고.
+
+
+---
+
+
+## 4. ADHD의 시간 처리 결함 — 리듬게임 통합의 이론적 기반
+
+Toplak, M. E., Dockstader, C., & Tannock, R. (2006). Temporal information processing in ADHD: Findings to date and new methods. *Journal of Neuroscience Methods*, 151(1), 15–29. https://doi.org/10.1016/j.jneumeth.2005.09.018
+
+  ADHD와 관련된 시간 처리 결함을 종합 정리:
+  지속 판별, 지속 재현, 핑거 탭핑 과제에서의 결함.
+  소뇌, 기저핵, 전두엽 영역의 기능 이상과 연결.
+
+  [앱에서 차용하는 내용]
+  · 반응성 테스트가 단순 반응속도를 넘어 "시간 지각 능력"을 측정한다는 이론적 근거.
+  · 향후 리듬게임 통합 시, 비트 동기화(beat synchronization) 과제의 이론적 기반.
+
+
+---
+
+
+## 5. 리듬 기반 평가·훈련 — 향후 확장 근거
+
+Shin, H. J., Lee, H. J., Kang, D., Kim, J. I., & Jeong, E. (2023). Rhythm-based assessment and training for children with attention deficit hyperactivity disorder (ADHD): A feasibility study protocol. *Frontiers in Human Neuroscience*, 17, 1190736. https://doi.org/10.3389/fnhum.2023.1190736
+
+  한양대 연구팀의 RAT(Rhythm-based Assessment and Training) 프로토콜.
+  4가지 리듬 유형(등간격, 싱코페이션, 박자적, 비박자적)으로
+  ADHD 아동의 시간 관련 능력을 평가하고, 인지 능력과의 관계를 탐색.
+
+  [앱에서 차용하는 내용]
+  · 향후 리듬게임 형태로 테스트를 통합할 때의 설계 근거.
+  · 리듬 복잡도를 난이도 조절 변수로 활용할 수 있다는 아이디어.
+
+Shalev, N., Ben Simon, E., Mevorach, C., Cohen, Y., & Tsal, Y. (2020). Spontaneous and stimulus-driven rhythmic behaviors in ADHD adults and controls. *Neuropsychologia*, 146, 107544. https://doi.org/10.1016/j.neuropsychologia.2020.107544
+
+  ADHD 성인은 외부 리듬에 동기화(synchronization)하는 능력이 저하됨.
+
+  [앱에서 차용하는 내용]
+  · 향후 리듬게임 통합 시 "동기화 정확도(sync accuracy)"를 추가 지표로 활용 가능.
+
+
+---
+
+
+## 6. 게이미피케이션 — 게임형 테스트의 유효성 및 참여도 근거
+
+Dai, J., Wufue, A., & Zhang, H. (2025). Effectiveness of a gamified educational application on attention and academic performance in children with ADHD: An 8-week randomized controlled trial. *Frontiers in Education*, 10, 1668260. https://doi.org/10.3389/feduc.2025.1668260
+
+  게이미피케이션 기반 학습 중재가 ADHD 아동의
+  시각·청각 반응시간과 지속적 주의력을 개선할 수 있음을 보인 RCT.
+  즉각적 피드백, 보상, 난이도 조절이 ADHD 사용자의 몰입을 유지하는 데 효과적.
+
+  [앱에서 차용하는 내용]
+  · 반응성 테스트의 게이미피케이션 설계 근거.
+  · 디지털 치료제(게이미피케이션) 단계에서 반응성 테스트를 반복 활용하는 근거.
+  · 학습(단어 외우기, 정보 습득)과 결합 가능하다는 근거.
+
+Lumsden, J., Edwards, E. A., Lawrence, N. S., Coyle, D., & Munafò, M. R. (2016). Gamification of cognitive assessment and cognitive training: A systematic review of applications and efficacy. *JMIR Serious Games*, 4(2), e11. https://doi.org/10.2196/games.5888
+
+  게이미피케이션된 인지 평가가 ADHD 대상에서 참여도와 훈련 완수율을 높인다는 체계적 리뷰.
+  ADHD 아동은 게이미피케이션 조건에서 더 많은 시행을 완료하고 정확도도 높았음.
+
+  [앱에서 차용하는 내용]
+  · 테스트를 게임형으로 만드는 것의 타당성 근거.
+  · "게이미피케이션이 측정 타당도를 해치지 않는다"는 근거.
+
+He, F., Qi, Y., Zhou, Y., Cao, A., Yue, X., Fang, S., Lin, H., Li, R., & Chen, J. (2024). A mobile device-based game prototype for ADHD: Development and preliminary feasibility testing. *Translational Psychiatry*, 14, 250. https://doi.org/10.1038/s41398-024-02964-2
+
+  모바일 기반 게임 프로토타입으로 ADHD 아동의 CPT 정확도와 반응시간이 유의하게 개선됨.
+  안구 운동 테스트에서도 억제 조절과 작업 기억의 향상 관찰.
+
+  [앱에서 차용하는 내용]
+  · 모바일 기반 반응성 테스트의 실현 가능성(feasibility) 근거.
+  · 4주간 반복 수행 시 개선 효과가 나타날 수 있다는 근거.
+
+
+---
+
+
+## 7. CPT 표준 도구 — 시행 구성 설계의 근거
+
+Conners, C. K. (2014). *Conners Continuous Performance Test 3rd Edition (CPT 3): Technical manual*. Multi-Health Systems.
+
+  [앱에서 차용하는 내용]
+  · Go/No-Go 시행 비율(75:25 기준), ISI 변동, 시행 수 설정 참고.
+  · CPT-3의 반응 유효성 판정 기준(100ms 미만 반응 제외) 참고.
+
+Halperin, J. M., Sharma, V., Greenblatt, E., & Schwartz, S. T. (1991). Assessment of the continuous performance test: Reliability and validity in a nonreferred sample. *Psychological Assessment*, 3(4), 603–608. https://doi.org/10.1037/1040-3590.3.4.603
+
+  [앱에서 차용하는 내용]
+  · Go/No-Go 패러다임의 신뢰도·타당도 근거.
+  · No-Go 비율 20~30%가 최적이라는 설계 근거.
+
+
+---
+
+
+## 8. DSM-5 ADHD 진단 기준
+
+American Psychiatric Association. (2022). *Diagnostic and statistical manual of mental disorders* (5th ed., text rev.). American Psychiatric Association Publishing.
+
+  [앱에서 차용하는 내용]
+  · 부주의 우세형, 과잉행동-충동 우세형, 복합형의 분류 근거.
+  · 반응성 테스트 결과를 3개 유형(dominant_tendency)으로 해석할 때의 이론적 기반.
+
+
+---
+
+
+## 9. 거절 민감성과 ADHD — UX/톤앤매너 설계 근거
+
+Dodson, W. W., Modestino, E. J., Ceritoğlu, H. T., & Zayed, B. (2024). Rejection sensitivity dysphoria in attention-deficit/hyperactivity disorder: A case series. *Neurology*, 7, 23–30.
+
+  [앱에서 차용하는 내용]
+  · ADHD 사용자가 부정적 피드백에 취약하다는 근거.
+  · 프롬프트에서 "비정상", "심각함" 등의 단어를 피하고
+    수용적 표현("~경향이 보여요", "~패턴이 관찰돼요")을 사용하는 근거.
+  · 통합 리포트의 "비판 없는 수용" 원칙과 일관.
+
+
+---
+
+
+## 10. 향후 리듬게임 통합 시 추가 참고
+
+Bhatt, S., et al. (2024). Can you beat the music? Validation of a gamified rhythmic training in children with ADHD. *medRxiv*. https://doi.org/10.1101/2024.03.19.24304539
+
+  리듬 기반 게이미피케이션 훈련(Rhythm Workers)의 ADHD 아동 대상 타당성 연구.
+  2주간 300분 훈련 후 리듬 능력과 실행 기능(Go/No-Go, Flanker) 향상 가능성.
+  (프리프린트 — 정식 출판 전이므로 인용 시 주의)
+
+  [앱에서 차용하는 내용]
+  · 리듬게임이 평가뿐 아니라 훈련(디지털 치료제) 단계에서도 활용 가능하다는 근거.
+  · "A Dance of Fire and Ice" 스타일로 테스트를 통합할 때의 참고.

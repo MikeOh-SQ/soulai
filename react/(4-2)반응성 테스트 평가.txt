@@ -1,0 +1,313 @@
+=====================================
+반응성 테스트 평가 방식
+=====================================
+
+본 문서는 반응성 테스트에서 수집한 원시 데이터를
+분석 가능한 지표로 변환하고, 해석 수준을 판정하는 전체 로직을 기술합니다.
+
+평가 결과는 두 가지 경로로 사용됩니다:
+  경로 A: 통합 리포트 → "목표 놓침 ○%", "잘못된 반응 ○%"로 ASRS와 교차 비교
+  경로 B: 상세 인지 프로필 → RTV, Tau 등 세부 지표를 게이지로 시각화
+
+
+===================
+1. 원시 데이터 → 지표 계산 (백엔드 로직)
+===================
+
+아래는 개발 담당이 구현할 계산 로직입니다.
+의사코드(pseudocode)로 작성하였으며, 실제 구현 시 언어에 맞게 변환합니다.
+
+
+[1-1] 전처리: 무효 반응 제거
+
+  // 100ms 미만 반응 = 예측 반응(anticipatory), 분석에서 제외
+  valid_trials = trials.filter(t => t.reaction_time_ms === null || t.reaction_time_ms >= 100)
+
+  // 제외된 시행 수를 기록 (나중에 품질 지표로 활용)
+  anticipatory_count = trials.length - valid_trials.length
+
+
+[1-2] 테스트 1(부주의)에서 계산하는 지표
+
+  go_trials = valid_trials.filter(t => t.trial_type === "go")
+  nogo_trials = valid_trials.filter(t => t.trial_type === "nogo")
+  correct_go = go_trials.filter(t => t.is_correct === true && t.reaction_time_ms !== null)
+
+  ① 누락 오류율 (Omission Rate)
+     = go_trials에서 무응답(response_ms === null)인 시행 수 / 전체 Go 시행 수
+     omission_count = go_trials.filter(t => t.response_ms === null).length
+     omission_rate = omission_count / go_trials.length
+     omission_rate_pct = round(omission_rate * 100, 1)
+
+     → 이 값이 통합 리포트의 "목표 놓침 ○○%"로 직접 전달됩니다.
+
+  ② 평균 반응시간 (Mean RT)
+     = 정답 Go 시행의 reaction_time_ms 평균
+     mean_rt = average(correct_go.map(t => t.reaction_time_ms))
+
+  ③ 반응시간 변동성 (RT Variability = RTSD)
+     = 정답 Go 시행의 reaction_time_ms 표준편차
+     rt_variability = stddev(correct_go.map(t => t.reaction_time_ms))
+
+     ※ 왜 RTSD가 중요한가?
+     Tamm et al. (2012) 리뷰에 따르면, 평균 반응시간(Mean RT)은 ADHD군과
+     대조군 사이에서 효과 크기가 작은 반면(d ≈ 0.3~0.5),
+     RTSD는 효과 크기가 크고(d ≈ 0.7~1.0) ADHD를 더 잘 구별합니다.
+     Kofler et al. (2013) 메타분석(319개 연구)에서도
+     "ADHD는 평균 속도를 통제해도 RTV에서 여전히 유의한 차이를 보인다"고 확인했습니다.
+
+  ④ Tau (극단적 느린 반응 지표)
+     = 반응시간 분포의 오른쪽 꼬리 크기
+
+     간편 계산법 (ex-Gaussian fitting이 어려울 경우):
+       sorted_rts = correct_go.map(t => t.reaction_time_ms).sort(ascending)
+       top_10_pct = sorted_rts.slice(-ceil(sorted_rts.length * 0.1))
+       tau = average(top_10_pct) - mean_rt
+
+     ※ Tau의 의미:
+     Tamm et al. (2012)은 ADHD에서 반응시간 분포가 오른쪽으로 길게 늘어지며,
+     이 "꼬리"(Tau)가 주의가 순간적으로 끊기는 현상(lapse of attention)을
+     반영하는 핵심 지표라고 설명합니다.
+     평균 RT가 같아도 Tau가 크면 "중간중간 크게 느려지는 순간"이 많다는 뜻입니다.
+
+  ⑤ 후반부 정확도 하락 (Late-phase Accuracy Drop)
+     = 전반부 대비 후반부 정확도 변화를 퍼센트로 표현
+
+     first_half = valid_trials.slice(0, valid_trials.length / 2)
+     second_half = valid_trials.slice(valid_trials.length / 2)
+     acc_first = first_half.filter(t => t.is_correct).length / first_half.length
+     acc_second = second_half.filter(t => t.is_correct).length / second_half.length
+
+     if acc_first > 0:
+       late_phase_drop = round(((acc_first - acc_second) / acc_first) * 100, 1)
+     else:
+       late_phase_drop = 0
+
+     ※ 이 지표는 CPT 연구에서 "vigilance decrement"로 알려진 현상을 반영합니다.
+     ADHD에서는 과제 후반으로 갈수록 정확도가 더 크게 떨어지는 경향이 있습니다.
+
+
+[1-3] 테스트 2(충동성)에서 계산하는 지표
+
+  nogo_trials_t2 = test2_valid_trials.filter(t => t.trial_type === "nogo")
+  go_trials_t2 = test2_valid_trials.filter(t => t.trial_type === "go")
+
+  ⑥ 오경보 오류율 (Commission Rate)
+     = No-Go 자극에 반응한 시행 수 / 전체 No-Go 시행 수
+     commission_count = nogo_trials_t2.filter(t => t.response_ms !== null).length
+     commission_rate = commission_count / nogo_trials_t2.length
+     commission_rate_pct = round(commission_rate * 100, 1)
+
+     → 이 값이 통합 리포트의 "잘못된 반응 ○○%"로 직접 전달됩니다.
+
+     ※ Acosta-López et al. (2021)에 따르면:
+     오경보 오류는 충동성의 내표형(endophenotype)으로,
+     "멈춰야 할 때 멈추지 못하는" 억제 실패를 직접적으로 반영합니다.
+
+  ⑦ 성급한 반응 비율 (Fast Error Rate)
+     = 전체 반응 중 200ms 미만의 반응 비율
+     all_responses = test2_valid_trials.filter(t => t.response_ms !== null)
+     fast_errors = all_responses.filter(t => t.reaction_time_ms < 200).length
+     fast_error_rate = fast_errors / all_responses.length
+     fast_error_rate_pct = round(fast_error_rate * 100, 1)
+
+  ⑧ 충동성 패턴 복합 판단
+     테스트 2의 mean_rt_t2와 commission_rate를 함께 봅니다:
+     - commission_rate > 0.30 AND mean_rt_t2 < 400ms → "충동적 반응 패턴"
+       (빠르게 반응하면서 억제도 안 됨 = 전형적 충동성)
+     - commission_rate > 0.30 AND mean_rt_t2 > 600ms → "주의 저하 혼합 패턴"
+       (느리게 반응하면서 억제도 안 됨 = 부주의와 혼합)
+     이 패턴 정보는 프롬프트에서 해석 톤을 조절하는 데 사용합니다.
+
+
+[1-4] 테스트 3(과잉행동)에서 계산하는 지표
+
+  gyro_data = test3의 자이로센서 데이터 배열 (900개)
+
+  ⑨ 총 움직임 크기 (Total Movement)
+     = 각 샘플의 3축 각속도 크기(magnitude)의 합
+     magnitudes = gyro_data.map(d => sqrt(d.gyro_x² + d.gyro_y² + d.gyro_z²))
+     total_movement = sum(magnitudes)
+
+  ⑩ 안정 유지 시간 비율 (Stable Duration %)
+     = magnitude가 임계값(0.05 rad/s) 이하인 샘플 비율
+     stable_samples = magnitudes.filter(m => m <= 0.05).length
+     stable_duration_pct = round((stable_samples / magnitudes.length) * 100, 1)
+
+  ⑪ 큰 움직임 횟수 (Spike Count)
+     = magnitude가 상위 임계값(0.3 rad/s)을 초과한 횟수
+     spike_count = magnitudes.filter(m => m > 0.3).length
+
+  ※ 임계값(0.05, 0.3)은 앱 내 데이터가 축적되면 조정이 필요한 탐색적 값입니다.
+
+
+===================
+2. 지표별 해석 수준 판정
+===================
+
+각 지표를 3단계로 분류합니다.
+판정은 백엔드에서 수행하며, LLM에는 판정 결과만 전달합니다.
+
+
+[2-1] 부주의 영역 기준
+
+  지표                    | 양호 (low)    | 주의 (moderate) | 뚜렷함 (high)
+  ---------------------- | ------------ | --------------- | -------------
+  RT 변동성 (RTSD, ms)   | ≤ 150        | 151 ~ 250       | > 250
+  Tau (ms)               | ≤ 200        | 201 ~ 400       | > 400
+  누락 오류율 (%)         | ≤ 10         | 11 ~ 25         | > 25
+  후반부 정확도 하락 (%)   | ≤ 10         | 11 ~ 25         | > 25
+
+  영역 종합 판정:
+    지표 4개 중 high가 3개 이상 → 영역 = "high"
+    지표 4개 중 moderate 이상이 2개 이상 → 영역 = "moderate"
+    그 외 → 영역 = "low"
+
+  ※ 기준값 근거:
+  - RTSD 기준: Tamm et al. (2012)에서 ADHD군 RTSD가 대조군 대비
+    평균 1~1.5 SD 높았으며, 대부분 200ms 이상에서 유의한 차이를 보임.
+    150ms(대조군 평균 범위)와 250ms(ADHD군 평균 범위)를 경계로 설정.
+  - 누락 오류율: Acosta-López et al. (2021)의 모델에서
+    10% 이하는 정상 수행, 25% 이상에서 부주의 예측력이 높아짐.
+
+
+[2-2] 충동성 영역 기준
+
+  지표                    | 양호 (low)    | 주의 (moderate) | 뚜렷함 (high)
+  ---------------------- | ------------ | --------------- | -------------
+  오경보 오류율 (%)        | ≤ 20         | 21 ~ 40         | > 40
+  성급한 반응 비율 (%)     | ≤ 5          | 6 ~ 15          | > 15
+
+  영역 종합 판정:
+    오경보 오류율이 high → 영역 = "high"
+    오경보 오류율이 moderate → 영역 = "moderate"
+    그 외 → 영역 = "low"
+    (성급한 반응 비율은 보조 지표로, 동점일 때 참고)
+
+
+[2-3] 과잉행동/자기조절 영역 기준
+
+  지표                    | 양호 (low)    | 주의 (moderate) | 뚜렷함 (high)
+  ---------------------- | ------------ | --------------- | -------------
+  안정 유지 시간 (%)       | ≥ 70         | 40 ~ 69         | < 40
+  큰 움직임 횟수           | ≤ 3          | 4 ~ 8           | ≥ 9
+
+  ※ 이 기준은 탐색적이며 표준화된 근거가 부족합니다.
+     데이터 축적 후 기준을 재설정해야 합니다.
+     해석 시 부주의·충동성보다 가중치를 낮게 둡니다.
+
+
+===================
+3. 종합 위험 수준 판정
+===================
+
+  조건                                         | 종합 수준
+  ------------------------------------------- | ----------
+  부주의·충동성·과잉행동 모두 low               | very_low
+  부주의·충동성 중 하나만 moderate              | low
+  부주의 또는 충동성 중 하나가 high             | moderate
+  부주의 또는 충동성 중 둘 다 moderate 이상     | moderate
+  부주의와 충동성 둘 다 high                    | high
+
+  ※ 과잉행동은 종합 수준 판정에 포함하지 않습니다 (보조 참고용).
+  ※ 부주의와 충동성에 동등한 가중치를 줍니다.
+
+  우세 경향(dominant_tendency):
+    부주의 level > 충동성 level → "inattention"
+    충동성 level > 부주의 level → "impulsivity"
+    동일하면 → "combined"
+
+
+===================
+4. 통합 리포트 연동: 교차 분석을 위한 출력 설계
+===================
+
+통합 리포트의 핵심 기능은 "주관적 보고(ASRS) vs 객관적 수행(CPT) 교차 분석"입니다.
+이를 위해 반응성 테스트는 아래 두 값을 핵심 출력으로 제공합니다:
+
+  omission_rate_pct  →  ASRS 부주의 점수와 비교
+  commission_rate_pct →  ASRS 충동성 점수와 비교
+
+리포트 프롬프트의 테스트 케이스와 매핑:
+
+  케이스 A (부주의 우세형):
+    ASRS 부주의 높음(85) + CPT 누락 오류 높음(78%) → 주관·객관 일치
+    → "스스로 느끼시는 집중 어려움이 실제 테스트에서도 확인되었어요"
+
+  케이스 B (충동성 우세형):
+    ASRS 충동성 높음(88) + CPT 오경보 오류 높음(82%) → 주관·객관 일치
+    → "느끼시는 충동적 경향이 테스트에서도 나타났어요"
+
+  케이스 C (주관-객관 불일치형):
+    ASRS 매우 높음(90/85) + CPT 양호(30%/40%) → 불일치
+    → "스스로는 어려움을 크게 느끼시지만 테스트 수행은 양호한 편이에요"
+
+  이 교차 분석이 작동하려면:
+    1) omission_rate_pct와 commission_rate_pct가 0~100 범위의 퍼센트여야 함
+    2) 통합 리포트 프롬프트의 "높음/양호" 판단 기준과 일관되어야 함
+
+  반응성 테스트 → 통합 리포트 전달 기준 매핑:
+    omission_rate_pct ≤ 25%  → 리포트에서 "양호" 표시
+    omission_rate_pct 26~50% → 리포트에서 "다소 잦음" 표시
+    omission_rate_pct > 50%  → 리포트에서 "매우 잦음" 표시
+
+    commission_rate_pct ≤ 30%  → 리포트에서 "양호" 표시
+    commission_rate_pct 31~60% → 리포트에서 "다소 잦음" 표시
+    commission_rate_pct > 60%  → 리포트에서 "매우 잦음" 표시
+
+
+===================
+5. 최종 출력 JSON (백엔드 → LLM / 통합 리포트)
+===================
+
+{
+  "game_result": {
+
+    // === 통합 리포트 직접 전달용 (필수) ===
+    "omission_rate_pct": 26.7,
+    "commission_rate_pct": 33.3,
+
+    // === 상세 인지 프로필용 (확장) ===
+    "raw_metrics": {
+      "mean_rt_ms": 620,
+      "rt_variability_ms": 280,
+      "tau_ms": 350,
+      "omission_count": 12,
+      "commission_count": 4,
+      "fast_error_rate_pct": 8.0,
+      "late_phase_drop_pct": 22.0,
+      "stable_duration_pct": 55.0,
+      "spike_count": 6,
+      "anticipatory_count": 2,
+      "total_go_trials": 45,
+      "total_nogo_trials_t1": 15,
+      "total_nogo_trials_t2": 12
+    },
+
+    // === 수준 판정 결과 ===
+    "domain_levels": {
+      "inattention": "high",
+      "impulsivity": "moderate",
+      "hyperactivity": "moderate"
+    },
+    "overall_risk_level": "moderate",
+    "dominant_tendency": "inattention",
+    "impulsivity_pattern": "impulsive",  // "impulsive" / "mixed" / "normal"
+
+    // === 유효성 ===
+    "test_validity": {
+      "test1_valid": true,
+      "test2_valid": true,
+      "test3_valid": true
+    },
+
+    // === LLM이 생성할 해석 (아래 프롬프트에서 채워짐) ===
+    "interpretation": "",
+    "detail_summary": {
+      "inattention": "",
+      "impulsivity": "",
+      "hyperactivity": ""
+    },
+    "disclaimer": "이 결과는 참고용이며, ADHD 여부를 확정하는 진단 도구가 아닙니다. 정확한 평가를 위해서는 전문가 상담을 권장합니다."
+  }
+}

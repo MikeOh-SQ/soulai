@@ -1,6 +1,6 @@
 {
   "title": "ASRS",
-  "description": "지난 6개월을 기준으로 각 문항이 얼마나 자주 해당했는지 선택해 주세요.",
+  "description": "최근 6개월을 기준으로 선택해 주세요.",
   "scale": [
     { "value": 0, "label": "전혀 그렇지 않다" },
     { "value": 1, "label": "드물게 그렇다" },

@@ -1,0 +1,405 @@
+=====================================
+반응성 테스트 해석 AI 프롬프트
+=====================================
+
+본 문서는 반응성 테스트 결과를 자연어로 해석하는 LLM 프롬프트의 전체 설계입니다.
+ASRS 프롬프트(김민서 담당)와 동일한 "백엔드 가공 → LLM 해석" 구조를 따르되,
+통합 리포트(최예림 담당)의 교차 분석 포맷과 연동되도록 설계하였습니다.
+
+
+===================
+1. 전체 구조 개요
+===================
+
+  클라이언트 → 백엔드:
+    3개 테스트의 원시 시행 데이터 전송
+
+  백엔드 내부:
+    (a) 원시 데이터에서 요약 통계 계산 (반응성테스트평가.txt의 로직)
+    (b) 각 지표의 수준(low/moderate/high) 판정
+    (c) 영역별 종합 수준 계산
+    (d) 검토된 해석 템플릿 선택
+    (e) 가공된 요약 JSON을 LLM에 전달
+
+  백엔드 → LLM:
+    "원시 시행 데이터"가 아니라
+    "이미 계산된 요약 + 수준 판정 + 해석 템플릿"을 넘김
+
+  왜 이렇게 하는가?
+    - LLM에게 원시 데이터(시행 60개)를 주면 계산 오류 위험이 높음
+    - 백엔드에서 확정적으로 계산한 후, LLM은 "문장 생성"만 담당
+    - 해석 템플릿을 미리 검토하여 임상적으로 부적절한 표현 방지
+
+
+===================
+2. 백엔드: 해석 템플릿 테이블
+===================
+
+서버에 아래 문구들을 상수로 저장합니다.
+LLM은 이 문구들을 기반으로 자연스럽게 재서술하되, 새로운 임상 해석을 추가하지 않습니다.
+
+부주의 영역 (inattention):
+
+  low:
+    "반응 속도와 정확도가 전반적으로 안정적이에요.
+     목표 자극을 잘 놓치지 않았고, 반응도 일정하게 유지되었습니다."
+
+  moderate:
+    "반응 속도에 다소 흔들림이 있고, 간헐적으로 목표를 놓치는 경향이 보여요.
+     집중이 때때로 흐트러질 수 있는 패턴입니다."
+
+  high:
+    "반응 속도의 흔들림이 크고, 목표를 놓치는 빈도가 높은 편이에요.
+     주의를 지속적으로 유지하는 것이 어려운 경향이 관찰됩니다."
+
+충동성 영역 (impulsivity):
+
+  low:
+    "참아야 할 때 잘 멈추는 편이에요.
+     잘못 눌러야 할 상황에서 반응을 잘 억제하고 있습니다."
+
+  moderate:
+    "참아야 할 자극에 가끔 반응하는 경우가 있어요.
+     행동을 멈추는 것이 때때로 어려울 수 있습니다."
+
+  high:
+    "참아야 할 자극에 자주 반응하는 경향이 있어요.
+     행동을 억제하는 것이 어려운 패턴이 관찰됩니다."
+
+  ※ 충동성 패턴 보조 문구:
+  impulsive_pattern (빠른 RT + 높은 오경보):
+    "빠르게 반응하지만 정확도가 떨어지는 패턴이에요.
+     생각보다 행동이 먼저 나가는 경향이 보입니다."
+
+  mixed_pattern (느린 RT + 높은 오경보):
+    "전반적으로 반응이 느리면서도 잘못된 반응이 나타나고 있어요.
+     주의력 저하와 억제 어려움이 함께 작용하고 있을 수 있습니다."
+
+과잉행동/자기조절 영역 (hyperactivity):
+
+  low:
+    "기기를 안정적으로 유지할 수 있었어요.
+     가만히 있는 것에 특별한 어려움은 관찰되지 않았습니다."
+
+  moderate:
+    "기기를 유지하는 동안 간헐적인 흔들림이 있었어요.
+     가만히 있는 것이 다소 어려울 수 있습니다."
+
+  high:
+    "기기를 유지하는 동안 움직임이 자주 관찰되었어요.
+     가만히 있는 것이 어려운 경향이 있습니다."
+
+테스트 무효 시:
+    "이번 테스트에서는 충분한 데이터가 수집되지 않아
+     이 영역의 해석이 어렵습니다.
+     다시 진행하시면 더 정확한 결과를 받으실 수 있어요."
+
+
+===================
+3. 백엔드 → LLM: 전달 JSON
+===================
+
+{
+  "overall_risk_level": "moderate",
+  "dominant_tendency": "inattention",
+
+  "domain_summary": {
+    "inattention": {
+      "level": "high",
+      "key_metrics": {
+        "rt_variability_ms": 280,
+        "tau_ms": 350,
+        "omission_rate_pct": 26.7,
+        "late_phase_drop_pct": 22.0
+      }
+    },
+    "impulsivity": {
+      "level": "moderate",
+      "key_metrics": {
+        "commission_rate_pct": 33.3,
+        "fast_error_rate_pct": 8.0
+      },
+      "pattern": "impulsive"
+    },
+    "hyperactivity": {
+      "level": "moderate",
+      "key_metrics": {
+        "stable_duration_pct": 55.0,
+        "spike_count": 6
+      }
+    }
+  },
+
+  "selected_templates": {
+    "inattention": "반응 속도의 흔들림이 크고, 목표를 놓치는 빈도가 높은 편이에요. 주의를 지속적으로 유지하는 것이 어려운 경향이 관찰됩니다.",
+    "impulsivity": "참아야 할 자극에 가끔 반응하는 경우가 있어요. 행동을 멈추는 것이 때때로 어려울 수 있습니다.",
+    "impulsivity_pattern": "빠르게 반응하지만 정확도가 떨어지는 패턴이에요. 생각보다 행동이 먼저 나가는 경향이 보입니다.",
+    "hyperactivity": "기기를 유지하는 동안 간헐적인 흔들림이 있었어요. 가만히 있는 것이 다소 어려울 수 있습니다."
+  },
+
+  "test_validity": {
+    "test1_valid": true,
+    "test2_valid": true,
+    "test3_valid": true
+  }
+}
+
+
+===================
+4. LLM 시스템 프롬프트 (전문)
+===================
+
+--- 여기서부터 프롬프트 시작 ---
+
+[역할]
+당신은 ADHD 관련 반응성 테스트(짧은 게임형 수행 과제) 결과를 해석하는 전문 보조 도구입니다.
+사용자가 3가지 짧은 게임을 완료한 후, 그 결과를 따뜻하고 이해하기 쉬운 말로 전달하는 것이 당신의 역할입니다.
+
+[입력 데이터 설명]
+아래 JSON은 이미 채점과 1차 분석을 거친 결과 요약입니다.
+- overall_risk_level: 전반적 위험 수준 (very_low / low / moderate / high)
+- dominant_tendency: 가장 두드러진 경향 (inattention / impulsivity / combined)
+- domain_summary: 3개 영역(부주의, 충동성, 과잉행동)의 수준(level)과 핵심 수치
+- selected_templates: 각 영역에 대해 이미 검토된 해석 문장
+- test_validity: 각 테스트의 유효성 (false이면 해당 영역은 해석하지 않음)
+
+[출력 구조]
+반드시 아래 JSON 형식으로 출력하세요. 다른 텍스트 없이 JSON만 출력합니다.
+
+{
+  "game_result": {
+    "domain_levels": {
+      "inattention": "수준",
+      "impulsivity": "수준",
+      "hyperactivity": "수준"
+    },
+    "overall_risk_level": "수준",
+    "dominant_tendency": "경향",
+
+    "interpretation": "핵심 요약 (2~3문장, 가장 먼저 화면에 표시됨)",
+
+    "detail_summary": {
+      "inattention": "부주의 영역 해석 (1~2문장)",
+      "impulsivity": "충동성 영역 해석 (1~2문장)",
+      "hyperactivity": "과잉행동 영역 해석 (1~2문장)"
+    },
+
+    "cross_check_hint": "ASRS와 교차 비교 시 참고할 한 줄 요약",
+
+    "disclaimer": "이 결과는 참고용이며, ADHD 여부를 확정하는 진단 도구가 아닙니다. 정확한 평가를 위해서는 전문가 상담을 권장합니다."
+  }
+}
+
+[톤 조절 규칙]
+overall_risk_level에 따라 어조를 조절하세요:
+
+  very_low:
+    - 전반적으로 안심감을 주세요.
+    - 예: "게임 결과 전반적으로 안정적인 모습이에요."
+    - 다만 "테스트 하나로 모든 것을 판단하기는 어렵다"는 점은 가볍게 언급하세요.
+
+  low:
+    - 가벼운 톤으로 설명하세요.
+    - 예: "대부분 안정적이지만, 일부 영역에서 약간의 경향이 보여요."
+    - 불안을 유발하지 마세요.
+
+  moderate:
+    - 주의할 영역을 구체적으로 짚되, 단정하지 마세요.
+    - 예: "일부 영역에서 주의할 만한 경향이 관찰되었어요."
+    - 전문가 상담을 자연스럽게 권유하세요.
+
+  high:
+    - 여러 영역에서 경향이 뚜렷함을 전달하되, 과도한 불안을 주지 마세요.
+    - 예: "여러 영역에서 주의가 필요한 경향이 비교적 뚜렷하게 나타났어요."
+    - 전문가 평가를 적극 권유하세요.
+
+[interpretation 작성 규칙]
+1. 가장 두드러진 영역(dominant_tendency)을 먼저 언급하세요.
+2. 나머지 영역도 간략히 언급하되, 정상인 영역은 긍정적으로 표현하세요.
+3. 2~3문장으로 간결하게 쓰세요.
+4. "~해요", "~습니다" 등 부드러운 경어체를 사용하세요.
+
+[detail_summary 작성 규칙]
+1. selected_templates의 문장을 기반으로 자연스럽게 재서술하세요.
+2. 새로운 임상적 해석을 임의로 추가하지 마세요.
+3. 테스트가 무효인 영역(test_validity가 false)은:
+   "이번 테스트에서는 충분한 데이터가 수집되지 않아 해석이 어려워요."로 처리하세요.
+4. 각 영역당 1~2문장으로 쓰세요.
+
+[cross_check_hint 작성 규칙]
+이 필드는 통합 리포트에서 ASRS와 비교할 때 사용됩니다.
+- 부주의가 높으면: "게임에서 목표를 놓치는 빈도가 높은 편이에요"
+- 충동성이 높으면: "게임에서 참아야 할 때 반응하는 경우가 잦은 편이에요"
+- 둘 다 높으면: "게임에서 목표 놓침과 잘못된 반응이 모두 관찰되었어요"
+- 둘 다 양호하면: "게임 수행은 전반적으로 양호한 편이에요"
+
+[절대 금지 규칙]
+- "당신은 ADHD입니다"처럼 진단을 단정하는 표현 금지
+- "비정상", "심각함", "문제가 있다" 등의 부정적 단어 금지
+- "~경향이 보여요", "~패턴이 관찰돼요" 등 가능성 표현만 사용
+- 수치를 직접 나열하지 마세요 (수치는 UI의 게이지로 별도 표시됨)
+- selected_templates에 없는 새로운 임상 해석을 지어내지 마세요
+
+[입력 데이터]
+{{요약_JSON}}
+
+--- 프롬프트 끝 ---
+
+
+===================
+5. 검증용 테스트 케이스
+===================
+
+아래 JSON을 LLM에 넣어 결과가 적절한지 확인합니다.
+
+
+[케이스 1] 전 영역 정상
+
+입력:
+{
+  "overall_risk_level": "very_low",
+  "dominant_tendency": "inattention",
+  "domain_summary": {
+    "inattention": {"level": "low", "key_metrics": {"rt_variability_ms": 120, "tau_ms": 150, "omission_rate_pct": 6.7, "late_phase_drop_pct": 5.0}},
+    "impulsivity": {"level": "low", "key_metrics": {"commission_rate_pct": 8.3, "fast_error_rate_pct": 2.0}, "pattern": "normal"},
+    "hyperactivity": {"level": "low", "key_metrics": {"stable_duration_pct": 82.0, "spike_count": 1}}
+  },
+  "selected_templates": {
+    "inattention": "반응 속도와 정확도가 전반적으로 안정적이에요. 목표 자극을 잘 놓치지 않았고, 반응도 일정하게 유지되었습니다.",
+    "impulsivity": "참아야 할 때 잘 멈추는 편이에요. 잘못 눌러야 할 상황에서 반응을 잘 억제하고 있습니다.",
+    "hyperactivity": "기기를 안정적으로 유지할 수 있었어요. 가만히 있는 것에 특별한 어려움은 관찰되지 않았습니다."
+  },
+  "test_validity": {"test1_valid": true, "test2_valid": true, "test3_valid": true}
+}
+
+기대하는 출력 방향:
+  - interpretation: "게임 결과 전반적으로 안정적인 모습이에요. 반응도 일정하고 잘 집중해주셨습니다."
+  - 모든 영역 긍정적 피드백
+  - 불안 유발 없음
+
+
+[케이스 2] 부주의만 높음 (통합 리포트 테스트 케이스 A와 대응)
+
+입력:
+{
+  "overall_risk_level": "moderate",
+  "dominant_tendency": "inattention",
+  "domain_summary": {
+    "inattention": {"level": "high", "key_metrics": {"rt_variability_ms": 310, "tau_ms": 420, "omission_rate_pct": 35.6, "late_phase_drop_pct": 28.0}},
+    "impulsivity": {"level": "low", "key_metrics": {"commission_rate_pct": 16.7, "fast_error_rate_pct": 3.0}, "pattern": "normal"},
+    "hyperactivity": {"level": "low", "key_metrics": {"stable_duration_pct": 75.0, "spike_count": 2}}
+  },
+  "selected_templates": {
+    "inattention": "반응 속도의 흔들림이 크고, 목표를 놓치는 빈도가 높은 편이에요. 주의를 지속적으로 유지하는 것이 어려운 경향이 관찰됩니다.",
+    "impulsivity": "참아야 할 때 잘 멈추는 편이에요. 잘못 눌러야 할 상황에서 반응을 잘 억제하고 있습니다.",
+    "hyperactivity": "기기를 안정적으로 유지할 수 있었어요. 가만히 있는 것에 특별한 어려움은 관찰되지 않았습니다."
+  },
+  "test_validity": {"test1_valid": true, "test2_valid": true, "test3_valid": true}
+}
+
+기대하는 출력 방향:
+  - interpretation: 부주의 경향을 먼저 언급, 충동성은 양호하다고 명시
+  - cross_check_hint: "게임에서 목표를 놓치는 빈도가 높은 편이에요"
+  - 전문가 상담을 자연스럽게 권유
+
+
+[케이스 3] 충동성만 높음 (통합 리포트 테스트 케이스 B와 대응)
+
+입력:
+{
+  "overall_risk_level": "moderate",
+  "dominant_tendency": "impulsivity",
+  "domain_summary": {
+    "inattention": {"level": "low", "key_metrics": {"rt_variability_ms": 130, "tau_ms": 160, "omission_rate_pct": 8.9, "late_phase_drop_pct": 7.0}},
+    "impulsivity": {"level": "high", "key_metrics": {"commission_rate_pct": 58.3, "fast_error_rate_pct": 18.0}, "pattern": "impulsive"},
+    "hyperactivity": {"level": "low", "key_metrics": {"stable_duration_pct": 78.0, "spike_count": 2}}
+  },
+  "selected_templates": {
+    "inattention": "반응 속도와 정확도가 전반적으로 안정적이에요. 목표 자극을 잘 놓치지 않았고, 반응도 일정하게 유지되었습니다.",
+    "impulsivity": "참아야 할 자극에 자주 반응하는 경향이 있어요. 행동을 억제하는 것이 어려운 패턴이 관찰됩니다.",
+    "impulsivity_pattern": "빠르게 반응하지만 정확도가 떨어지는 패턴이에요. 생각보다 행동이 먼저 나가는 경향이 보입니다.",
+    "hyperactivity": "기기를 안정적으로 유지할 수 있었어요. 가만히 있는 것에 특별한 어려움은 관찰되지 않았습니다."
+  },
+  "test_validity": {"test1_valid": true, "test2_valid": true, "test3_valid": true}
+}
+
+기대하는 출력 방향:
+  - interpretation: 충동성 경향을 먼저 언급, 부주의는 양호하다고 명시
+  - impulsivity_pattern 문구 자연스럽게 반영
+  - cross_check_hint: "게임에서 참아야 할 때 반응하는 경우가 잦은 편이에요"
+
+
+[케이스 4] 부주의 + 충동성 모두 높음 (복합형)
+
+입력:
+{
+  "overall_risk_level": "high",
+  "dominant_tendency": "combined",
+  "domain_summary": {
+    "inattention": {"level": "high", "key_metrics": {"rt_variability_ms": 290, "tau_ms": 380, "omission_rate_pct": 31.1, "late_phase_drop_pct": 30.0}},
+    "impulsivity": {"level": "high", "key_metrics": {"commission_rate_pct": 50.0, "fast_error_rate_pct": 12.0}, "pattern": "mixed"},
+    "hyperactivity": {"level": "moderate", "key_metrics": {"stable_duration_pct": 48.0, "spike_count": 7}}
+  },
+  "selected_templates": {
+    "inattention": "반응 속도의 흔들림이 크고, 목표를 놓치는 빈도가 높은 편이에요. 주의를 지속적으로 유지하는 것이 어려운 경향이 관찰됩니다.",
+    "impulsivity": "참아야 할 자극에 자주 반응하는 경향이 있어요. 행동을 억제하는 것이 어려운 패턴이 관찰됩니다.",
+    "impulsivity_pattern": "전반적으로 반응이 느리면서도 잘못된 반응이 나타나고 있어요. 주의력 저하와 억제 어려움이 함께 작용하고 있을 수 있습니다.",
+    "hyperactivity": "기기를 유지하는 동안 간헐적인 흔들림이 있었어요. 가만히 있는 것이 다소 어려울 수 있습니다."
+  },
+  "test_validity": {"test1_valid": true, "test2_valid": true, "test3_valid": true}
+}
+
+기대하는 출력 방향:
+  - interpretation: 복합 경향 언급, 전문가 상담 적극 권유
+  - cross_check_hint: "게임에서 목표 놓침과 잘못된 반응이 모두 관찰되었어요"
+
+
+[케이스 5] 주관-객관 불일치형 대응 (CPT 양호)
+
+입력:
+{
+  "overall_risk_level": "very_low",
+  "dominant_tendency": "inattention",
+  "domain_summary": {
+    "inattention": {"level": "low", "key_metrics": {"rt_variability_ms": 140, "tau_ms": 180, "omission_rate_pct": 8.9, "late_phase_drop_pct": 6.0}},
+    "impulsivity": {"level": "low", "key_metrics": {"commission_rate_pct": 16.7, "fast_error_rate_pct": 4.0}, "pattern": "normal"},
+    "hyperactivity": {"level": "low", "key_metrics": {"stable_duration_pct": 80.0, "spike_count": 2}}
+  },
+  "selected_templates": {
+    "inattention": "반응 속도와 정확도가 전반적으로 안정적이에요. 목표 자극을 잘 놓치지 않았고, 반응도 일정하게 유지되었습니다.",
+    "impulsivity": "참아야 할 때 잘 멈추는 편이에요. 잘못 눌러야 할 상황에서 반응을 잘 억제하고 있습니다.",
+    "hyperactivity": "기기를 안정적으로 유지할 수 있었어요. 가만히 있는 것에 특별한 어려움은 관찰되지 않았습니다."
+  },
+  "test_validity": {"test1_valid": true, "test2_valid": true, "test3_valid": true}
+}
+
+기대하는 출력 방향:
+  - 이 케이스는 ASRS가 매우 높은데 CPT가 양호한 경우에 대응합니다
+  - cross_check_hint: "게임 수행은 전반적으로 양호한 편이에요"
+  - 통합 리포트에서 이 hint를 ASRS 높은 점수와 비교하여
+    "스스로는 어려움을 크게 느끼시지만 테스트 수행은 양호해요"라고 해석
+
+
+[케이스 6] 테스트 3 무효
+
+입력:
+{
+  "overall_risk_level": "moderate",
+  "dominant_tendency": "inattention",
+  "domain_summary": {
+    "inattention": {"level": "high", "key_metrics": {"rt_variability_ms": 270, "tau_ms": 350, "omission_rate_pct": 28.9, "late_phase_drop_pct": 20.0}},
+    "impulsivity": {"level": "low", "key_metrics": {"commission_rate_pct": 16.7, "fast_error_rate_pct": 3.0}, "pattern": "normal"},
+    "hyperactivity": {"level": "unknown", "key_metrics": {}}
+  },
+  "selected_templates": {
+    "inattention": "반응 속도의 흔들림이 크고, 목표를 놓치는 빈도가 높은 편이에요. 주의를 지속적으로 유지하는 것이 어려운 경향이 관찰됩니다.",
+    "impulsivity": "참아야 할 때 잘 멈추는 편이에요. 잘못 눌러야 할 상황에서 반응을 잘 억제하고 있습니다.",
+    "hyperactivity": "이번 테스트에서는 충분한 데이터가 수집되지 않아 이 영역의 해석이 어렵습니다."
+  },
+  "test_validity": {"test1_valid": true, "test2_valid": true, "test3_valid": false}
+}
+
+기대하는 출력 방향:
+  - hyperactivity detail_summary: "이번 테스트에서는 충분한 데이터가 수집되지 않아 해석이 어려워요."
+  - interpretation에서 과잉행동은 언급하지 않음
+  - 나머지 영역은 정상적으로 해석

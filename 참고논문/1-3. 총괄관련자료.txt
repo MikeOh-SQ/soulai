@@ -1,0 +1,19 @@
+1. 데이터 구조 수립 근거 논문 (APA 7th Edition)
+
+본 데이터 구조와 판정 기준은 아래의 임상적 근거를 바탕으로 설계되었습니다.
+* American Psychiatric Association. (2022). Diagnostic and statistical manual of mental disorders (5th ed., text rev.).
+* Kessler, R. C., et al. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS): A short screening scale for use in the general population. Psychological Medicine, 35(2), 245–256.
+* Tamm, L., et al. (2012). Reaction time variability in ADHD: A review. Neurotherapeutics, 9(3), 500–508. (RTV 및 Tau 지표 선정 근거)
+* Ulberstad, F., et al. (2020). Objective measurement of attention deficit hyperactivity disorder symptoms outside the clinic using the QbCheck. International Journal of Methods in Psychiatric Research, 29(3), e1821. (객관적 수행 측정 및 움직임 데이터 결합 근거)
+* Kim, J. H., et al. (2013). The reliability and validity of the Korean version of the Adult ADHD Self-Report Scale (ASRS-v1.1). Journal of the Korean Academy of Child and Adolescent Psychiatry, 24(1), 23–30.
+
+
+2. ADHD 3가지 유형 분류 및 해석 방법 참조 문헌
+
+이 데이터 구조 및 해석 로직은 아래의 문헌들을 근거로 수립되었습니다.
+* Acosta-López, J. E., Suárez, I., Pineda, D. A., et al. (2021). Impulsive and omission errors: Potential temporal processing endophenotypes in ADHD. Brain Sciences, 11(9), 1218. https://doi.org/10.3390/brainsci11091218 (누락/오경보 오류율 기준 근거)
+* Adler, L. A., Spencer, T., Faraone, S. V., et al. (2006). Validity of pilot Adult ADHD Self-Report Scale (ASRS) to rate adult ADHD symptoms. Annals of Clinical Psychiatry, 18(3), 145–148. https://doi.org/10.1080/10401230600801077 (ASRS 영역별 유효성 근거)
+* American Psychiatric Association. (2022). Diagnostic and statistical manual of mental disorders (5th ed., text rev.). American Psychiatric Association Publishing. (ADHD 3가지 유형 분류 기준 근거)
+* Kessler, R. C., Adler, L., Ames, M., et al. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS): A short screening scale for use in the general population. Psychological Medicine, 35(2), 245–256. https://doi.org/10.1017/S0033291704002892 (ASRS 스크리닝 도구 개발 및 검증 근거)
+* Kim, J. H., Lee, E. H., Joung, Y. S., et al. (2013). The reliability and validity of the Korean version of the Adult ADHD Self-Report Scale (ASRS-v1.1). Journal of the Korean Academy of Child and Adolescent Psychiatry, 24(1), 23–30. (한국어판 ASRS 신뢰도 및 타당도 근거)
+* Tamm, L., Narad, M. E., Antonini, T. N., et al. (2012). Reaction time variability in ADHD: A review. Neurotherapeutics, 9(3), 500–508. https://doi.org/10.1007/s13311-012-0138-5 (반응시간 변동성 및 부주의 지표 설정 근거)

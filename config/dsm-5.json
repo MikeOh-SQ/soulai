@@ -1,6 +1,6 @@
 {
   "title": "DSM-5 ADHD Screening",
-  "description": "최근 6개월 동안 여러 환경에서 반복되었는지를 떠올리며 Yes / No로 답해 주세요. 이 검사는 진단이 아닌 선별 참고용입니다.",
+  "description": "최근 6개월을 기준으로 선택해 주세요.",
   "questions": [
     {
       "section": "부주의",

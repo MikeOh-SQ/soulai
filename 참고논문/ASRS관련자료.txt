@@ -1,0 +1,145 @@
+아래 참고문헌들은 우리가 지금까지 설계한  
+- ASRS 기반 질문 구성  
+- 채점·스크리닝 기준  
+- 성인 ADHD 임상적 해석  
+- 인지행동치료(CBT) 및 실행기능 보완 전략  
+의 근거가 되는 대표적인 논문·도서들입니다. 실제 서비스/연구에서 인용할 때 활용할 수 있도록 APA 7판 형식으로 정리했습니다.
+
+---
+
+## 1. ASRS(성인 ADHD 자가보고 척도) 개발·검증 관련
+
+**ASRS 원 개발 및 WHO 도구**
+
+- Kessler, R. C., Adler, L., Ames, M., Demler, O., Faraone, S., Hiripi, E., Howes, M. J., Jin, R., Secnik, K., Spencer, T., Ustün, T. B., & Walters, E. E. (2005). The World Health Organization Adult ADHD Self-Report Scale (ASRS): A short screening scale for use in the general population. *Psychological Medicine, 35*(2), 245–256. https://doi.org/10.1017/S0033291704002892  
+
+  - ASRS v1.1의 개발 및 단축형(Part A 6문항)의 민감도/특이도, 컷오프(“양성 문항 4개 이상” 기준 등)에 대한 핵심 근거.
+
+- World Health Organization. (2003). *Adult ADHD Self-Report Scale (ASRS) v1.1: Screener*. World Health Organization.  
+
+  - WHO 공식 ASRS 자료. 문항 구조, 채점 로직(Part A 6문항), 스크리닝 도구로서의 사용 지침.
+
+**ASRS의 구조·요인 및 성인 ADHD 평가**
+
+- Adler, L. A., Spencer, T., Faraone, S. V., Kessler, R. C., Howes, M. J., Biederman, J., & Secnik, K. (2006). Validity of pilot Adult ADHD Self-Report Scale (ASRS) to rate adult ADHD symptoms. *Annals of Clinical Psychiatry, 18*(3), 145–148. https://doi.org/10.1080/10401230600801077  
+
+  - ASRS의 문항 구성, 주의력/과잉행동-충동성 영역과의 연관성, 임상적 유효성에 대한 근거.
+
+---
+
+## 2. 성인 ADHD 진단 기준 및 임상적 특징 (DSM-5 기반)
+
+- American Psychiatric Association. (2013). *Diagnostic and statistical manual of mental disorders* (5th ed.). American Psychiatric Publishing.  
+
+  - ADHD의 DSM-5 진단 기준(부주의 9항목, 과잉행동/충동성 9항목), 성인에서의 표현 양상, 기능 손상(직업, 대인관계, 자기관리)에 대한 공식 기준.
+
+- Barkley, R. A. (2015). *Attention-deficit hyperactivity disorder: A handbook for diagnosis and treatment* (4th ed.). Guilford Press.  
+
+  - 성인 ADHD의 주의력·실행기능 장애, 직무·대인관계·자기관리에 미치는 영향에 대한 대표적 종합서. 우리가 “과제 지연, 마감 문제, 대화 중 집중 저하, 약속·일정 관리 어려움” 등을 해석할 때의 이론·임상적 근거.
+
+- Faraone, S. V., Biederman, J., & Mick, E. (2006). The age-dependent decline of attention deficit hyperactivity disorder: A meta-analysis of follow-up studies. *Psychological Medicine, 36*(2), 159–165. https://doi.org/10.1017/S003329170500471X  
+
+  - 성인기까지 지속되는 ADHD 증상의 양상 변화와 기능 손상에 대한 근거(어린이의 과잉행동 → 성인에서의 안절부절, 내부 불안정 등).
+
+---
+
+## 3. 한국어판 ASRS 및 국내 성인 ADHD 연구
+
+(국문 논문은 영문 표기로 표기했습니다.)
+
+- Kim, J. H., Lee, E. H., Joung, Y. S., Lee, S. I., Kim, S. J., & Cho, S. C. (2013). The reliability and validity of the Korean version of the Adult ADHD Self-Report Scale (ASRS-v1.1). *Journal of the Korean Academy of Child and Adolescent Psychiatry, 24*(1), 23–30.  
+
+  - 한국어판 ASRS의 번안·신뢰도·타당도 연구. 한국 성인 집단에서 ASRS Part A의 스크리닝 성능, 컷오프 설정에 대한 근거.
+
+- Lee, S. I., Kim, J. H., Joung, Y. S., Lee, E. H., Kim, B. N., & Cho, S. C. (2009). Characteristics of Korean adults with attention-deficit/hyperactivity disorder based on the Adult ADHD Self-Report Scale. *Psychiatry Investigation, 6*(1), 17–24. https://doi.org/10.4306/pi.2009.6.1.17  
+
+  - 한국 성인에서 ASRS 점수와 실제 기능 손상(직업, 대인관계, 자기관리) 간의 연관성에 대한 근거.
+
+※ 국내 논문/보고서에 따라 저자·연도에 약간 차이가 있을 수 있으므로, 실제 인용 시 최신 자료를 한 번 더 확인하는 것을 권장합니다.
+
+---
+
+## 4. DIVA-5, CAT 등 정밀 평가 도구
+
+- Kooij, J. J. S., Francken, M. H., & DIVA Foundation. (2010). *Diagnostic Interview for ADHD in Adults (DIVA 2.0)*. DIVA Foundation.  
+  (Updated: Kooij, J. J. S. (2019). *DIVA-5: Diagnostic Interview for ADHD in Adults, based on the DSM-5*.)  
+
+  - 우리가 “정밀 평가 도구(DIVA-5 등) 권고”를 언급한 근거. DSM-5 기준에 기반한 성인 ADHD 진단 면담 도구.
+
+- Barkley, R. A. (2011). *Barkley Adult ADHD Rating Scale–IV (BAARS-IV)*. Guilford Press.  
+
+  - 성인 ADHD 평가에서 ASRS와 함께 자주 언급되는 표준화 척도. 증상·기능 손상 평가의 다차원적 접근에 대한 근거.
+
+- Conners, C. K., & Erhardt, D. (2000). *Conners’ Adult ADHD Rating Scales (CAARS)*. Multi-Health Systems.  
+
+  - 성인 ADHD 평가에 사용되는 또 다른 대표 척도. 다중 정보원(자가보고, 타인보고) 평가의 중요성에 대한 근거.
+
+---
+
+## 5. 성인 ADHD와 실행기능, 일상 기능 손상
+
+- Barkley, R. A., & Murphy, K. R. (2010). Impairment in occupational functioning and adult ADHD: The predictive utility of executive function (EF) ratings versus EF tests. *Archives of Clinical Neuropsychology, 25*(3), 157–173. https://doi.org/10.1093/arclin/acq014  
+
+  - 우리가 “마감 지연, 과제 미루기, 정리정돈 어려움, 금전·시간 관리 문제”를 실행기능 손상과 연결해 해석한 근거.
+
+- Brown, T. E. (2013). *A new understanding of ADHD in children and adults: Executive function impairments*. Routledge.  
+
+  - ADHD를 “주의력 장애”를 넘어서 “실행기능 장애”로 이해하는 틀.  
+    - 작업 시작·지속·마무리  
+    - 정서 조절  
+    - 작업 기억  
+    - 조직화·계획  
+  등에 대한 설명이, 우리가 문항 1–4를 실행기능(주의·조직·마무리)과 연결해 해석한 근거가 됨.
+
+---
+
+## 6. 성인 ADHD에 대한 CBT 및 자기관리 전략
+
+- Safren, S. A., Sprich, S. E., Perlman, C. A., & Otto, M. W. (2005). Cognitive-behavioral therapy for ADHD in medication-treated adults with continued symptoms. *Behaviour Research and Therapy, 43*(7), 831–842. https://doi.org/10.1016/j.brat.2004.07.001  
+
+  - 성인 ADHD 대상 CBT의 핵심 요소(과제 분할, 시간 관리, 조직화, 과제 시작·완료 전략 등)에 대한 근거. 우리가 제안한 “작업 쪼개기, 타이머 기반 집중, 외부 기억 도구 활용” 같은 전략의 임상적 기반.
+
+- Safren, S. A., Perlman, C. A., Sprich, S., & Otto, M. W. (2005). *Mastering your adult ADHD: A cognitive-behavioral treatment program, therapist guide*. Oxford University Press.  
+
+  - 성인 ADHD CBT 매뉴얼.  
+    - To-do 리스트, 우선순위 정하기  
+    - 시간 차단(time blocking)  
+    - 환경 구조화(방해 자극 줄이기)  
+  등 우리가 제안한 실행기능 보완 전략의 직접적인 출처.
+
+- Ramsay, J. R., & Rostain, A. L. (2015). *Cognitive-behavioral therapy for adult ADHD: An integrative psychosocial and medical approach* (2nd ed.). Routledge.  
+
+  - 성인 ADHD에서 CBT의 구체적 기법, 동기화, 자기비난 감소, 환경 조정 등.  
+    - “자기비난을 줄이고, ADHD를 뇌 기능의 문제로 이해하자”는 정상화 메시지의 이론적 근거.
+
+- Solanto, M. V. (2011). *Cognitive-behavioral therapy for adult ADHD: Targeting executive dysfunction*. Guilford Press.  
+
+  - 실행기능(시간 관리, 조직화, 계획, 우선순위 설정)에 초점을 맞춘 CBT 프로그램.  
+    - 우리가 설계한 “실행 기능 보완 전략 3가지” 섹션의 전반적 이론적 기반.
+
+---
+
+## 7. 성인 ADHD의 일상 기능 영향(직무·대인관계·자기관리)
+
+- Kessler, R. C., Adler, L., Barkley, R., Biederman, J., Conners, C. K., Demler, O., Faraone, S. V., Greenhill, L. L., Howes, M. J., Secnik, K., Spencer, T., Ustün, T. B., Walters, E. E., & Zaslavsky, A. M. (2006). The prevalence and correlates of adult ADHD in the United States: Results from the National Comorbidity Survey Replication. *American Journal of Psychiatry, 163*(4), 716–723. https://doi.org/10.1176/ajp.2006.163.4.716  
+
+  - 성인 ADHD가 직업 기능, 대인관계, 자기관리에서 어떤 손상을 동반하는지에 대한 역학·기능 손상 자료.
+
+- Biederman, J., Petty, C. R., Evans, M., Small, J., & Faraone, S. V. (2010). How persistent is ADHD? A controlled 10-year follow-up study of boys with ADHD. *Psychiatry Research, 177*(3), 299–304. https://doi.org/10.1016/j.psychres.2009.12.010  
+
+  - 성인기까지 이어지는 ADHD 증상이 학업·직업·대인관계 기능에 미치는 장기적 영향.
+
+---
+
+이 정도 세트면:
+
+- ASRS 문항·채점·컷오프의 근거 (Kessler et al., WHO, 한국판 ASRS 논문)
+- DSM-5 및 성인 ADHD의 임상적 특징 (APA, Barkley, Brown)
+- DIVA-5, CAT 등 정밀 평가 도구의 사용 권고 근거
+- 성인 ADHD에 대한 CBT·실행기능 전략의 근거 (Safren, Ramsay & Rostain, Solanto)
+- 일상 기능 손상(직무·대인관계·자기관리)과의 연관성 (Kessler et al., Barkley 등)
+
+을 모두 커버할 수 있습니다.
+
+추가로,  
+실제 서비스에서 “국내 사용자용 안내 문구”를 만들 때는, 위 영문 문헌 + 국내 정신건강의학회 가이드라인이나 국립정신건강센터 자료도 함께 참조해 두면 좋습니다.

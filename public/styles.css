@@ -16,6 +16,12 @@ body {
     #131313;
 }
 
+body.body-scroll-lock {
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+}
+
 .app-shell {
   max-width: 760px;
   margin: 0 auto;
@@ -177,6 +183,23 @@ body {
 .asrs-title-sub {
   font-size: 0.7em;
   line-height: 1.1;
+}
+
+.survey-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.survey-header-main {
+  min-width: 0;
+  flex: 1;
+}
+
+.survey-header-counter {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 
 .muted {
@@ -557,12 +580,50 @@ body {
   margin-bottom: 4.75rem;
 }
 
+.asrs-survey-card {
+  margin-bottom: 5.5rem;
+}
+
 .asrs-question {
   font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.05rem, 4.1vw, 1.45rem);
   line-height: 1.38;
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+.asrs-example-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  text-align: left;
+}
+
+.asrs-example-caret {
+  color: #ffacea;
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.asrs-example-caret.expanded {
+  transform: rotate(180deg);
+}
+
+.asrs-example-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.asrs-example-list.collapsed {
+  display: none;
 }
 
 .asrs-image-panel {
@@ -617,6 +678,11 @@ body {
   opacity: 0.75;
 }
 
+.stimulus-stage.pending-window,
+.go-nogo-scene.pending-window {
+  box-shadow: inset 0 0 0 2px rgba(193, 208, 63, 0.72);
+}
+
 .stimulus-stage-backdrop {
   position: absolute;
   inset: 0;
@@ -659,6 +725,12 @@ body {
   backdrop-filter: blur(6px);
 }
 
+.stimulus-placeholder.pending-window,
+.go-nogo-placeholder.pending-window {
+  background: rgba(193, 208, 63, 0.14);
+  color: #ddec59;
+}
+
 .stimulus-feedback-layer {
   position: absolute;
   inset: 0;
@@ -669,6 +741,7 @@ body {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+  display: none;
 }
 
 .go-nogo-scene {
@@ -678,6 +751,18 @@ body {
   border-radius: 2rem;
   overflow: hidden;
   background: #181818;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.go-nogo-scene:focus-visible {
+  outline: 2px solid #ffacea;
+  outline-offset: 3px;
 }
 
 .go-nogo-stage-backdrop {
@@ -706,8 +791,34 @@ body {
 }
 
 .go-nogo-placeholder {
+  display: grid;
+  place-items: center;
   width: 100%;
   height: 100%;
+  color: #ddec59;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.response-window-indicator {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  padding: 0.42rem 0.78rem;
+  border-radius: 999px;
+  background: rgba(193, 208, 63, 0.18);
+  color: #ddec59;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .go-nogo-feedback-layer {
@@ -720,6 +831,11 @@ body {
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;
+  display: none;
+}
+
+.go-nogo-feedback-layer.visible {
+  display: block;
 }
 
 .go-nogo-action-zone {
@@ -779,6 +895,11 @@ body {
   background:
     radial-gradient(circle at center, rgba(193, 208, 63, 0.08), transparent 48%),
     #181818;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .balance-target {

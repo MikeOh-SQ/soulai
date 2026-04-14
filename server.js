@@ -160,6 +160,11 @@ function formatCount(value) {
   return Number.isFinite(Number(value)) ? `${Number(value)}회` : null;
 }
 
+function roundTo(value, digits = 2) {
+  const factor = 10 ** digits;
+  return Math.round((Number(value) || 0) * factor) / factor;
+}
+
 function getAsrsResponses(record) {
   const raw = record.tests?.asrs || record.tests?.asar || [];
   if (Array.isArray(raw)) {
@@ -233,6 +238,7 @@ function computeAssessmentMetrics(record) {
   const game = record.tests?.game || {};
   const signal = game.tests?.signal_detection || {};
   const goNogo = game.tests?.go_nogo || {};
+  const balance = game.tests?.balance_hold || {};
 
   const asrsAverage = asrsAnswers.length
     ? asrsAnswers.reduce((sum, value) => sum + value, 0) / asrsAnswers.length
@@ -261,17 +267,27 @@ function computeAssessmentMetrics(record) {
       .toFixed(2)
   );
   const commissionRate = Number(
-    (goNogo.inhibition_failure_rate
+    (goNogo.commission_rate
+      ?? goNogo.inhibition_failure_rate
       ?? toRatio(goNogo.commission_errors || 0, goNogo.nogo_count || 0))
       .toFixed(2)
   );
   const reactionVariability = Number(signal.reaction_time_variability || 0);
+  const tau = Number(signal.tau || 0);
+  const latePhaseDrop = Number(signal.late_phase_drop || signal.sustained_attention_drop || 0);
+  const fastErrorRate = Number(goNogo.fast_error_rate || 0);
+  const meanGoReactionTime = Number(goNogo.mean_go_reaction_time || 0);
+  const stableDurationPct = Number(balance.stable_duration_pct || 0);
+  const spikeCount = Number(balance.spike_count ?? balance.large_motion_count ?? 0);
   const signalHasDetail = Number.isFinite(Number(signal.target_count))
     || Number.isFinite(Number(signal.hit_count))
     || Number.isFinite(Number(signal.omission_errors));
   const goNogoHasDetail = Number.isFinite(Number(goNogo.go_count))
     || Number.isFinite(Number(goNogo.commission_errors))
     || Number.isFinite(Number(goNogo.premature_response_count));
+  const balanceHasDetail = Number.isFinite(Number(balance.stable_duration_pct))
+    || Number.isFinite(Number(balance.spike_count))
+    || Number.isFinite(Number(balance.large_motion_count));
   const objectiveDomain = omissionRate >= commissionRate ? "부주의" : "충동성";
   const subjectiveDomain = attentionPositiveCount >= impulsePositiveCount ? "부주의" : "충동성";
   const alignment = Math.abs(omissionRate - commissionRate) < 0.12 && attentionPositiveCount === impulsePositiveCount
@@ -304,15 +320,22 @@ function computeAssessmentMetrics(record) {
     omissionRate,
     commissionRate,
     reactionVariability,
+    tau,
+    latePhaseDrop,
+    fastErrorRate,
+    meanGoReactionTime,
+    stableDurationPct,
+    spikeCount,
     subjectiveDomain,
     objectiveDomain,
     alignment,
     dailyImpactLevel,
     signalHasDetail,
     goNogoHasDetail,
+    balanceHasDetail,
     signal,
     goNogo,
-    balance: game.tests?.balance_hold || {},
+    balance,
     scores: {
       attention,
       executive,
@@ -332,10 +355,13 @@ function buildProfileBadges(metrics) {
   if (metrics.asrsImpulseScore >= 5 || metrics.commissionRate >= 0.2) {
     badges.push("#반응속도조절중");
   }
+  if (metrics.reactionVariability >= 180 || metrics.tau >= 250) {
+    badges.push("#집중변동체크");
+  }
   if (metrics.scores.executive >= 65) {
     badges.push("#구조화하면강해요");
   }
-  if (metrics.scores.attention >= 60 && metrics.reactionVariability < 180) {
+  if (metrics.scores.attention >= 60 && metrics.reactionVariability < 180 && metrics.commissionRate < 0.2) {
     badges.push("#몰입잠재력있음");
   }
   if (!badges.length) {
@@ -369,20 +395,20 @@ function buildDailyImpactLabel(level) {
 function buildDeterministicReport(metrics) {
   const badges = buildProfileBadges(metrics);
   const heroSummary = metrics.severity === "높음"
-    ? "설문과 반응성 검사에서 주의 조절 또는 반응 억제의 부담이 비교적 뚜렷하게 보였어요. 다만 이는 진단이 아니라 현재 패턴을 정리한 선별 결과예요."
+    ? "설문과 반응성 검사에서 목표를 놓치거나 멈춰야 할 때 반응하는 패턴이 함께 보여요. 다만 이는 진단이 아니라 현재 반응 경향을 정리한 선별 결과예요."
     : metrics.severity === "중간"
-      ? "몇몇 상황에서 집중 유지나 반응 조절이 흔들릴 수 있는 신호가 보여요. 생활 맥락과 함께 보면 더 정확한 이해에 도움이 됩니다."
-      : "현재 선별 결과만 보면 전반적 패턴은 비교적 안정적으로 보여요. 그래도 피로, 수면, 환경 변화에 따라 체감은 달라질 수 있어요.";
+      ? "몇몇 상황에서 집중 유지나 멈추는 조절이 흔들릴 수 있는 신호가 보여요. 생활 맥락과 함께 보면 더 정확한 이해에 도움이 됩니다."
+      : "현재 선별 결과만 보면 전반적 반응 패턴은 비교적 안정적으로 보여요. 그래도 피로, 수면, 환경 변화에 따라 체감은 달라질 수 있어요.";
   const subjectiveText = metrics.subjectiveDomain === "부주의"
     ? `ASRS에서는 부주의 쪽 신호가 조금 더 두드러졌어요. 특히 시작 지연이나 마감 직전까지 집중을 붙잡는 과정에서 부담이 있을 수 있어요.`
     : `ASRS에서는 충동성 또는 빠른 반응 쪽 신호가 조금 더 강조됐어요. 기다리기 어렵거나 반응을 먼저 내보내는 순간이 있을 수 있어요.`;
   const objectiveText = metrics.signalHasDetail || metrics.goNogoHasDetail
     ? [
       metrics.signalHasDetail
-        ? `신호 찾기에서는 목표 놓침 ${formatCount(metrics.signal.omission_errors) || "정보 없음"}, 반응시간 변동성 ${Number(metrics.signal.reaction_time_variability || 0)}ms 수준이었어요.`
+        ? `신호 찾기에서는 목표 놓침 비율 ${formatPercent(metrics.omissionRate)}, 반응시간 변동성 ${reactionVariabilityOrZero(metrics)}ms, 느리게 처지는 반응 폭 ${Number(metrics.tau || 0)}ms 수준이었어요.`
         : `신호 찾기 점수는 ${Number(metrics.signal.score || 0)}점이었어요.`,
       metrics.goNogoHasDetail
-        ? `Go/No-Go에서는 잘못된 반응 ${formatCount(metrics.goNogo.commission_errors) || "정보 없음"}, 성급 반응 ${formatCount(metrics.goNogo.premature_response_count) || "정보 없음"}로 기록됐어요.`
+        ? `Go/No-Go에서는 잘못된 반응 비율 ${formatPercent(metrics.commissionRate)}, 성급 반응 비율 ${formatPercent(metrics.fastErrorRate)}로 기록됐어요.`
         : `Go/No-Go 점수는 ${Number(metrics.goNogo.score || 0)}점이었어요.`
     ].join(" ")
     : metrics.objectiveDomain === "부주의"
@@ -394,11 +420,14 @@ function buildDeterministicReport(metrics) {
       ? "평소 체감과 검사 상황의 반응이 다르게 나타났어요. 환경, 긴장도, 과제 유형 차이의 영향을 함께 볼 필요가 있어요."
       : "부주의와 충동성 신호가 함께 섞여 보여서 한쪽으로 단정하기보다 상황별 차이를 함께 보는 편이 좋아요.";
   const inattentionSummary = metrics.signalHasDetail
-    ? `부주의 영역에서는 ASRS 부주의 점수 ${metrics.asrsAttentionScore}/16과 함께 목표 놓침 비율 ${formatPercent(metrics.omissionRate)}, 반응시간 변동성 ${reactionVariabilityOrZero(metrics)}ms가 저장돼 있어요. 저장된 수치만 보면 ${metrics.omissionRate >= 0.18 || metrics.reactionVariability >= 180 ? "집중 유지의 일관성을 점검할 필요가 있어 보여요." : "객관 지표는 비교적 안정적이지만 체감 부담은 높을 수 있어요."}`
+    ? `부주의 영역에서는 ASRS 부주의 점수 ${metrics.asrsAttentionScore}/16과 함께 목표 놓침 비율 ${formatPercent(metrics.omissionRate)}, 반응시간 변동성 ${reactionVariabilityOrZero(metrics)}ms, 후반부 정확도 저하 ${formatPercent(metrics.latePhaseDrop)}를 함께 보고 있어요. 저장된 수치만 보면 ${metrics.omissionRate >= 0.18 || metrics.reactionVariability >= 180 || metrics.tau >= 250 ? "집중 유지의 일관성을 점검할 필요가 있어 보여요." : "객관 지표는 비교적 안정적이지만 체감 부담은 높을 수 있어요."}`
     : `부주의 영역에서는 ASRS 부주의 점수 ${metrics.asrsAttentionScore}/16과 신호 찾기 점수 ${Number(metrics.signal.score || 0)}점을 함께 참고하고 있어요. 현재 JSON에는 세부 오류 수치가 없어 점수 수준 중심으로 해석하고 있어요.`;
   const impulsivitySummary = metrics.goNogoHasDetail
-    ? `충동성 영역에서는 ASRS 충동성 점수 ${metrics.asrsImpulseScore}/8과 함께 잘못된 반응 비율 ${formatPercent(metrics.commissionRate)}, 성급 반응 ${formatCount(metrics.goNogo.premature_response_count) || "0회"}가 저장돼 있어요. 저장된 수치만 보면 ${metrics.commissionRate >= 0.18 ? "속도보다 멈추는 조절을 더 신경 쓸 필요가 있어 보여요." : "억제 조절은 비교적 안정적으로 보입니다."}`
+    ? `충동성 영역에서는 ASRS 충동성 점수 ${metrics.asrsImpulseScore}/8과 함께 잘못된 반응 비율 ${formatPercent(metrics.commissionRate)}, 성급 반응 비율 ${formatPercent(metrics.fastErrorRate)}가 저장돼 있어요. 저장된 수치만 보면 ${metrics.commissionRate >= 0.18 ? "속도보다 멈추는 조절을 더 신경 쓸 필요가 있어 보여요." : "억제 조절은 비교적 안정적으로 보입니다."}`
     : `충동성 영역에서는 ASRS 충동성 점수 ${metrics.asrsImpulseScore}/8과 Go/No-Go 점수 ${Number(metrics.goNogo.score || 0)}점을 함께 보고 있어요. 현재 JSON에는 세부 오류 수치가 없어 점수 수준 중심으로 해석하고 있어요.`;
+  const hyperactivitySummary = metrics.balanceHasDetail
+    ? `균형 유지 테스트에서는 안정 유지 시간 ${roundTo(metrics.stableDurationPct, 1)}%, 큰 흔들림 ${Number(metrics.spikeCount || 0)}회로 기록됐어요. 이 영역은 보조 참고 정보로만 활용하는 것이 적절해요.`
+    : "";
   const empathy = metrics.dailyImpactLevel >= 4
     ? "이 정도 패턴이면 일상에서 해야 할 일을 따라가는 것만으로도 꽤 많은 에너지가 들었을 수 있어요. 스스로를 탓하기보다 부담이 커지는 상황을 먼저 알아차리는 것이 중요해요."
     : metrics.dailyImpactLevel >= 3
@@ -428,7 +457,8 @@ function buildDeterministicReport(metrics) {
       },
       profile: {
         inattentionSummary,
-        impulsivitySummary
+        impulsivitySummary,
+        hyperactivitySummary
       },
       dailyImpact: {
         level: metrics.dailyImpactLevel,
@@ -521,7 +551,7 @@ function parseJsonLoose(text) {
 
 function buildInsightsPrompt(record, metrics) {
   return [
-    "서비스: soul.ai.kr ADHD 선별/감별 보조 모바일 웹 앱",
+    "서비스: ADHDQQ.COM ADHD 선별/감별 보조 모바일 웹 앱",
     "중요: 진단 확정 표현 금지, 선별 결과와 권고 수준으로 작성",
     "어조: 따뜻하고 전문적인 임상심리사처럼, 부드러운 경어체 한국어 사용",
     "표현 지침: '목표 놓침(부주의)', '잘못된 반응(충동성)'처럼 쉬운 말로 설명",
@@ -563,7 +593,7 @@ function buildInsightsPrompt(record, metrics) {
 
 function buildChatPrompt(record, message) {
   return [
-    "서비스: soul.ai.kr ADHD 선별/감별 보조 모바일 웹 앱",
+    "서비스: ADHDQQ.COM ADHD 선별/감별 보조 모바일 웹 앱",
     "역할: ASRS Part A 결과를 바탕으로 사용자의 기존 계획을 현실적으로 조정하는 한국어 AI 코치",
     "중요: 진단 확정 표현 금지, 의료행위처럼 말하지 말 것",
     "현재 기록:",
@@ -578,7 +608,7 @@ function buildChatPrompt(record, message) {
 
 function buildAsrsAnalysisPrompt(record, analysis, metrics) {
   return [
-    "서비스: soul.ai.kr ADHD 선별/감별 보조 모바일 웹 앱",
+    "서비스: ADHDQQ.COM ADHD 선별/감별 보조 모바일 웹 앱",
     "역할: ASRS 결과를 짧고 공감적으로 해석하는 한국어 선별 보조 AI",
     "중요: 진단 확정 표현 금지, 선별 결과와 추가 평가 권고 수준으로만 작성",
     "ASRS 기준:",
@@ -597,6 +627,33 @@ function buildAsrsAnalysisPrompt(record, analysis, metrics) {
     "3. hyperactivity는 과잉행동/충동성 관련 강도를 2문장 이내로 설명",
     "4. guidance는 선별 도구 한계와 다음 단계 권고를 2문장 이내로 설명",
     "5. 한국어로만 작성"
+  ].join("\n");
+}
+
+function buildDsmAnalysisPrompt(record, analysis, metrics) {
+  return [
+    "서비스: ADHDQQ.COM ADHD 선별/감별 보조 모바일 웹 앱",
+    "역할: DSM-5 ADHD screening 결과를 짧고 공감적으로 해석하는 한국어 선별 보조 AI",
+    "중요: 진단 확정 표현 금지, 선별 결과와 추가 평가 권고 수준으로만 작성",
+    "DSM-5 선별 기준:",
+    "- 부주의 9문항 중 6개 이상 Yes면 부주의형 가능성",
+    "- 과잉행동/충동성 9문항 중 6개 이상 Yes면 과잉행동/충동형 가능성",
+    "- 두 영역이 모두 6개 이상 Yes면 복합형 가능성",
+    "- 두 영역 모두 6개 미만 Yes면 무증상 범위로 설명",
+    "- 본 결과는 진단이 아니라 현재 상태를 참고하기 위한 것입니다.",
+    "기록 JSON:",
+    JSON.stringify(record, null, 2),
+    "계산된 DSM-5 해석용 지표:",
+    JSON.stringify(analysis, null, 2),
+    "보조 점수:",
+    JSON.stringify(metrics, null, 2),
+    "요청:",
+    "1. summary는 전체 경향을 2문장 이내로 요약",
+    "2. subtype는 현재 분류를 공감적으로 2문장 이내로 설명",
+    "3. inattention는 부주의 영역 해석을 2문장 이내로 설명",
+    "4. hyperactivity는 과잉행동/충동성 영역 해석을 2문장 이내로 설명",
+    "5. guidance는 선별 도구 한계와 다음 단계 권고를 2문장 이내로 설명",
+    "6. 한국어로만 작성"
   ].join("\n");
 }
 
@@ -738,6 +795,32 @@ async function generateAsrsAnalysis(record, analysis) {
   };
 }
 
+async function generateDsmAnalysis(record, analysis) {
+  const metrics = computeAssessmentMetrics(record);
+  const payload = await callGeminiJson({
+    systemInstruction: "You are a concise Korean assistant for interpreting DSM-5 ADHD screening results. Return JSON only.",
+    prompt: buildDsmAnalysisPrompt(record, analysis, metrics),
+    schemaHint: [
+      "Schema:",
+      "{",
+      '  "summary": "string",',
+      '  "subtype": "string",',
+      '  "inattention": "string",',
+      '  "hyperactivity": "string",',
+      '  "guidance": "string"',
+      "}"
+    ].join("\n")
+  });
+
+  return {
+    summary: payload.summary || "DSM-5 응답에서는 현재 부주의와 과잉행동·충동성 신호 분포를 함께 살펴볼 필요가 있습니다.",
+    subtype: payload.subtype || `현재 응답은 ${analysis.subtype || "판정 보류"}로 정리됩니다.`,
+    inattention: payload.inattention || `부주의 문항은 ${analysis.inattentionYes || 0} / 9개 Yes로 집계되었습니다.`,
+    hyperactivity: payload.hyperactivity || `과잉행동·충동성 문항은 ${analysis.hyperactivityYes || 0} / 9개 Yes로 집계되었습니다.`,
+    guidance: payload.guidance || "본 결과는 진단이 아니라 참고용 선별 결과이므로 어려움이 지속되면 추가 평가를 고려하는 것이 좋습니다."
+  };
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   const pathname = url.pathname;
@@ -831,6 +914,20 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    if (req.method === "POST" && pathname === "/api/ai/dsm-analysis") {
+      const body = await readBody(req);
+      const payload = JSON.parse(body || "{}");
+
+      if (!payload.record || !payload.analysis) {
+        sendJson(res, 400, { error: "record and analysis are required" });
+        return;
+      }
+
+      const analysis = await generateDsmAnalysis(payload.record, payload.analysis);
+      sendJson(res, 200, analysis);
+      return;
+    }
+
     serveStatic(pathname, res);
   } catch (error) {
     const status = error.code === "ENOENT" ? 404 : 500;
@@ -841,5 +938,5 @@ const server = http.createServer(async (req, res) => {
 const port = process.env.PORT || 3333;
 const host = process.env.HOST || "127.0.0.1";
 server.listen(port, host, () => {
-  console.log(`soul.ai.kr app listening on http://${host}:${port}`);
+  console.log(`ADHDQQ.COM app listening on http://${host}:${port}`);
 });
