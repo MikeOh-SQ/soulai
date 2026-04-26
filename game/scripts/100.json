@@ -1,0 +1,115 @@
+{
+  "script_id": "event_100_points_01",
+  "title": "잘하고 있군, 임시 행정 곰",
+  "stage": "stage1",
+  "lines": [
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "축하한다, 애드! 자네가 해냈다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "뭐, 뭐야. 왜 갑자기 그렇게 소리를 질러?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "100점이다! 이건 단순한 숫자가 아니다. 질서가 혼돈을 1 대 0으로 이긴 역사적인 순간이지!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "아니, 왜 점수 하나 올랐다고 세계관이 흔들리는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "흥, 자네는 모른다. 체크된 할 일 하나가 무너진 문명 하나를 살린다는 사실을."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "그건 그냥 할 일 관리 앱 광고 문구 같아."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "하지만 자네, 방금 전보다 표정이 조금 나아졌군."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "응?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "처음 왔을 때는 금방이라도 바닥에 엎드려 '오늘은 여기까지'를 선언할 얼굴이었지. 지금은 아니다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...그 정도였냐, 나."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "그 정도였다. 아주 훌륭하게."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "칭찬을 하는 건지 공격을 하는 건지 하나로 통일해!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "잘 들어라, 애드. 완벽해서 100점을 받은 게 아니다. 포기하지 않아서 100점이 된 거다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "......"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "그러니 기억해 둬라. 자네는 생각보다 훨씬 괜찮은 곰이다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...헤헤. 그럼 조금만 더 해볼까."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "좋다! 그 기세로 200점까지 간다! 숲의 행정, 건설, 물류, 문명, 낭만, 그리고 간식 시간을 위하여!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "중간에 이상한 거 막 섞지 마!"
+    }
+  ]
+}

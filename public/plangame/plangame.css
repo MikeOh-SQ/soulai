@@ -1,0 +1,362 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  color: #f7f1e8;
+  background: #1f1710;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.app {
+  position: relative;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.85) brightness(0.55);
+}
+
+.topbar,
+.center-card,
+.game-view {
+  position: relative;
+  z-index: 1;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin: 0 auto 18px;
+  width: min(960px, 100%);
+}
+
+.chip-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(33, 24, 18, 0.82);
+  backdrop-filter: blur(8px);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.chip-score {
+  color: #ffe082;
+}
+
+.card {
+  background: rgba(21, 16, 13, 0.82);
+  border: 1px solid rgba(255, 240, 220, 0.14);
+  border-radius: 24px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+}
+
+.center-card {
+  width: min(560px, 100%);
+  margin: 10vh auto 0;
+  padding: 28px;
+  text-align: center;
+}
+
+.hero {
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.title {
+  margin: 0 0 10px;
+  font-size: clamp(28px, 4vw, 40px);
+  line-height: 1.1;
+}
+
+.muted {
+  margin: 0;
+  color: rgba(255, 247, 236, 0.82);
+  line-height: 1.5;
+}
+
+.game-view {
+  width: min(960px, 100%);
+  margin: 0 auto;
+}
+
+.goal-list {
+  display: grid;
+  gap: 14px;
+}
+
+.characters {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.character {
+  position: absolute;
+  bottom: 0;
+  width: auto;
+  max-height: min(60vh, 680px);
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.character.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.character-add {
+  left: clamp(8px, 2vw, 28px);
+}
+
+.character-lumen {
+  right: clamp(8px, 2vw, 28px);
+}
+
+.goal-row {
+  padding: 14px;
+}
+
+.goal-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.goal-button,
+.edit-button,
+.button {
+  border: 0;
+  border-radius: 18px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.goal-button {
+  min-height: 72px;
+  padding: 16px 18px;
+  text-align: left;
+  background: linear-gradient(135deg, rgba(196, 122, 53, 0.92), rgba(112, 67, 34, 0.92));
+  color: #fff9f0;
+}
+
+.goal-button.is-open {
+  outline: 2px solid rgba(255, 233, 180, 0.78);
+}
+
+.goal-title {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.goal-meta {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(255, 245, 232, 0.88);
+}
+
+.edit-button {
+  min-width: 60px;
+  padding: 0 18px;
+  background: rgba(255, 248, 237, 0.14);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.goal-panel {
+  margin-top: 12px;
+  padding: 16px;
+  border-radius: 18px;
+  background: rgba(255, 248, 237, 0.08);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.tutorial-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+}
+
+.tutorial {
+  position: absolute;
+  left: 50%;
+  bottom: 500px;
+  transform: translateX(-50%);
+  width: min(760px, 92vw);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #111;
+  padding: 12px 14px;
+  z-index: 6;
+}
+
+.tutorial-speaker {
+  font-size: 14px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.tutorial-text {
+  margin: 0;
+  font-size: clamp(17px, 2.2vw, 22px);
+  font-weight: 600;
+  line-height: 1.42;
+  word-break: keep-all;
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  z-index: 6;
+}
+
+.panel-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cooldown {
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffd894;
+}
+
+.cooldown.is-ready {
+  color: #bdf7b7;
+}
+
+.button {
+  padding: 12px 18px;
+  background: #efe0c5;
+  color: #2f2218;
+  font-weight: 800;
+}
+
+.button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.button-ghost {
+  background: rgba(255, 248, 237, 0.12);
+  color: #fff;
+}
+
+.stack {
+  display: grid;
+  gap: 12px;
+}
+
+.text-input {
+  width: 100%;
+  border: 1px solid rgba(255, 240, 220, 0.22);
+  border-radius: 16px;
+  background: rgba(255, 248, 237, 0.08);
+  color: #fff;
+  padding: 14px 16px;
+  font: inherit;
+}
+
+.modal {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+
+.modal::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal-card {
+  width: min(520px, calc(100vw - 24px));
+  padding: 24px;
+  border-radius: 24px;
+  background: #201711;
+  color: #fff7ec;
+}
+
+.modal-title {
+  margin: 0 0 12px;
+  font-size: 24px;
+}
+
+@media (max-width: 640px) {
+  .app {
+    padding: 14px;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .topbar-actions .button {
+    flex: 1 1 0;
+  }
+
+  .goal-header {
+    grid-template-columns: minmax(0, 1fr) 56px;
+  }
+
+  .goal-button {
+    min-height: 84px;
+  }
+
+}

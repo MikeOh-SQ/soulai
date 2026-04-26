@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADHDQQ Test1</title>
+    <link rel="stylesheet" href="/test1/test1.css?v=7" />
+  </head>
+  <body>
+    <main id="app" class="app" role="button" tabindex="0" aria-label="test1">
+      <img id="bg" class="bg" alt="" />
+
+      <section class="topbar">
+        <div class="chip-group">
+          <span id="user-chip" class="chip">사용자 없음</span>
+          <span id="total-score-chip" class="chip">숲 점수 0점</span>
+        </div>
+        <button id="forest-button" class="topbar-button" type="button">숲으로 돌아가기</button>
+      </section>
+
+      <section class="hud">
+        <span id="progress" class="chip">준비</span>
+      </section>
+
+      <section class="controls">
+        <button id="guide-button" class="guide-button" type="button">튜토리얼</button>
+      </section>
+
+      <section class="characters" aria-hidden="true">
+        <img id="add-character" class="character character-add" alt="" />
+        <img id="lumen-character" class="character character-lumen" alt="" />
+      </section>
+
+      <section class="stage" aria-live="polite">
+        <img id="object" class="object hidden" alt="" />
+      </section>
+
+      <section id="tutorial" class="tutorial hidden" aria-live="polite">
+        <div id="tutorial-speaker" class="tutorial-speaker"></div>
+        <p id="tutorial-text" class="tutorial-text"></p>
+      </section>
+
+      <section id="result" class="result hidden">
+        <h1 class="result-title">테스트 종료</h1>
+        <p id="score" class="result-score"></p>
+        <p id="judge" class="result-judge"></p>
+        <p id="result-total" class="result-guide"></p>
+        <div class="result-actions">
+          <button id="retry-button" class="result-button" type="button">다시하기</button>
+          <button id="forest-button-result" class="result-button result-button-ghost" type="button">숲으로 돌아가기</button>
+        </div>
+      </section>
+
+      <div id="hint" class="hint">클릭해서 시작</div>
+    </main>
+
+    <script src="/dtx/common.js?v=1"></script>
+    <script src="/test1/test1.js?v=10"></script>
+  </body>
+</html>

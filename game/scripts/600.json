@@ -1,0 +1,205 @@
+{
+  "script_id": "event_600_points_town_complete_01",
+  "title": "마을이 모습을 갖추다",
+  "stage": "stage4",
+  "lines": [
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "어... 잠깐만. 저기만 바뀐 게 아닌데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "후후. 드디어 왔군. 600점의 풍경에."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "아니, 진짜로 엄청 늘어났잖아. 집만 하나 더 생긴 수준이 아닌데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "보아라! 건물과 길과 구조물과 생활의 흔적! 흩어져 있던 가능성이 드디어 마을이라는 이름을 얻었다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "와... 진짜다. 전에는 그냥 숲 한가운데 빈터 같았는데, 지금은 딱 봐도 마을 같아."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "흥, 이제야 자네도 자신의 업적을 눈으로 인식하는군."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "왜 좋은 말도 꼭 얄밉게 하냐."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "당연하지! 이건 역사적인 순간이다! 오늘부로 이곳은 '그냥 좀 괜찮은 숲'에서 '슬슬 입주 문의가 들어올 것 같은 마을'로 진화했다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "표현이 너무 부동산 광고 같아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "위치를 보아라! 동선이 살아 있고, 구조가 유기적이며, 무엇보다 적당히 바빠 보인다! 완벽한 마을의 조건이지!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "적당히 바빠 보이는 게 왜 조건이야."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "너무 한가하면 불안하고, 너무 복잡하면 지치니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "...어."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "자네도 그렇지 않나? 아무것도 없으면 막막하고, 너무 많으면 벅차고."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "...맞아. 전에는 늘 둘 중 하나였던 것 같아."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "그래서 이 정도가 좋은 거다. 조금 복잡하지만 견딜 수 있고, 조금 바쁘지만 해낼 수 있는 상태."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...그걸 내가 만들었다는 거지?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "그렇다. 자네는 이 숲에 자리를 만들었고, 흐름을 만들었고, 이제는 분위기까지 만들고 있다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "와... 그렇게 말하니까 좀 엄청난데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "좀이 아니다. 꽤 엄청나다. 물론 내가 옆에서 훌륭하게 지휘한 덕도 있지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "결국 자기 공도 넣네!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "당연하지! 훌륭한 조력자는 적절한 타이밍에 공로를 주장할 줄도 알아야 한다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "대체 어디서 그런 걸 배우는 거야."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "달의 제3당근 관측기지에서."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "아직도 그 설정 안 버렸냐고!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "하지만 농담은 여기까지다. 600점은 꽤 큰 숫자다, 애드."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "응."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "처음의 자네는 자기 발밑도 흔들리는 것 같았지. 그런데 지금은 누군가가 들어와도 될 만큼 튼튼한 곳을 만들고 있다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "...처음엔 그냥 도망친 기분이었는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "도망쳐서 도착한 곳에서 이렇게까지 해낸 거면, 그것도 나쁘지 않은 시작이었겠지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_determined",
+      "expression_kr": "결심함 / 다시 해보려 함",
+      "text": "...좋아. 여기까지 왔으니까, 더 제대로 된 마을로 만들어 보자."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "훌륭하다! 그 기세다! 다음에는 더 많은 건물, 더 많은 주민, 더 많은 사연, 더 많은 업무, 그리고 더 많은 간식이 기다리고 있다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "마지막 두 개는 그냥 네 희망사항이잖아!"
+    }
+  ]
+}

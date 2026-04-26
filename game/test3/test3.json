@@ -1,0 +1,162 @@
+{
+  "script_id": "tutorial_react_03_unicycle_delivery",
+  "title": "반응성 게임 3 튜토리얼 - 외발자전거 심부름",
+  "game_type": "react_03_unicycle_delivery",
+  "tutorial_rules": {
+    "goal": "외발자전거의 균형을 유지하며 마을까지 간다",
+    "input_mode": {
+      "gyro_supported": "휴대폰을 손에 들고 균형을 맞춘다",
+      "gyro_not_supported": "가운데 버튼을 계속 누르고 균형을 유지한다"
+    },
+    "click_targets": [],
+    "avoid_targets": ["large_shake", "fall"],
+    "success_hint": "좌우 균형을 잘 맞추며 이동하기",
+    "fail_hint": "너무 크게 흔들리면 넘어질 수 있음"
+  },
+  "lines": [
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "좋아, 마지막은 마을 심부름이다! 생활과 문명을 연결하는 고귀한 임무지!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "드디어 좀 평범한 일 같네. 그냥 마을에 다녀오면 되는 거지?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "그렇다. 다만 아주 작은 문제가 하나 있다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그 '아주 작은 문제'라는 말이 제일 불안한데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "우리에게 남은 자전거가 외발 자전거밖에 없다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "그건 작은 문제가 아니라 거의 핵심 문제잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "하지만 멋지지 않나! 흔들리는 세상 위에서 단 하나의 바퀴로 균형을 붙드는 삶!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "왜 매번 평범한 심부름을 이상한 철학으로 포장하는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "규칙은 간단하다. 외발자전거를 타고 마을까지 가되, 균형을 잃지 마라."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그러니까 핵심은 빨리 가는 게 아니라 안 넘어지는 거네."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "그렇다. 너무 흔들리지 않게, 중심을 잘 잡으면서 가면 된다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_determined",
+      "expression_kr": "결심함 / 다시 해보려 함",
+      "text": "좋아. 균형만 잘 잡으면 되는 거지."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "그리고 휴대폰이 자이로 센서를 지원한다면 그냥 손에 들고 있으면 된다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "잠깐, 내가 외발자전거를 타는 건데 왜 갑자기 휴대폰 이야기가 나와?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "지원하지 않는다면 화면 가운데 버튼을 계속 누르고 있으면 된다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "아니, 방금 설명이 전혀 자연스럽게 이어지지 않았거든?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "중요한 것은 방식이 아니라 균형이다! 손에 들든, 가운데를 누르든, 넘어지지 않으면 되는 법!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "무슨 말을 하는지 알 것 같으면서도 전혀 모르겠어."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "쉽게 말하면 이거다. 센서가 되면 손으로 균형, 안 되면 가운데 버튼으로 균형."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그걸 처음부터 그렇게 말하면 됐잖아."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "설명은 약간의 혼란을 동반할 때 더 기억에 남는다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "그건 그냥 설명을 못하는 거잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "훌륭하다! 그럼 가 보자! 흔들림을 이기고 마을에 도착하는 자만이 진정한 심부름의 왕이다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "심부름에 왕 같은 건 없어..."
+    }
+  ]
+}

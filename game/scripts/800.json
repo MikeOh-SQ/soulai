@@ -1,0 +1,265 @@
+{
+  "script_id": "event_800_points_bear_statue_final_01",
+  "title": "위대한 곰의 시대",
+  "stage": "stage5",
+  "lines": [
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "왔구나! 드디어 왔구나!! 800점의 순간이!!!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "왜 시작부터 이렇게 소리를 질러?!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "보아라, 애드! 내가 700점부터 준비해 온 위대한 선물을!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "설마 진짜로 뭔가 완성된 거야?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "물론이지! 심지어 예상보다 크다! 아주 훌륭하게 크다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "왜 크기에 그렇게 집착하는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "왜냐하면 위대한 업적은 적당한 크기로는 표현할 수 없기 때문이다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "아니, 설마..."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "짜잔! 마을 중앙! 최고의 자리! 모두가 올려다볼 수 있는 위치! 거대한 곰 동상이다!!!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "뭐어어어어어?!?!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "왜 하필 동상이야!!!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "후후, 단순한 동상이 아니다. 이건 상징이다. 이 마을을 여기까지 끌고 온 임시 행정 곰의 위엄을 시각화한 결정체지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "시각화하지 마! 왜 그런 걸 굳이 시각화해!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "마을 중앙에 떡하니 있어야 주민들이 길을 잃지 않으니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "이정표를 세우면 되잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "하지만 이건 훨씬 멋지다! 커다란 곰의 기세! 묵직한 존재감! 약간 쓸데없지만 엄청 눈에 띄는 압도적 조형미!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "마지막에 본심 나왔지. 약간 쓸데없다고."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "쓸데없음이야말로 문명을 완성하는 마지막 한 조각이다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "그건 그냥 네 취향이잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "게다가 자세히 봐라. 표정도 자네를 참고했다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "잠깐, 왜 동상이 약간 멍한데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "리얼리티를 살렸다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "쓸데없이 충실하네!!!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "아하하하! 좋다! 아주 좋다! 이제 이 마을의 중심에는 자네가 있다! 문자 그대로!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "전혀 바라지 않은 방식으로 중심이 됐어..."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "800점! 모든 이벤트 완료! 컷씬 종료! 축제 분위기! 그리고 거대한 곰!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "잠깐, 이제 진짜 끝이야?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "이벤트는 여기까지다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "끝났네..."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "하지만 그렇다고 모든 게 끝난 건 아니지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "또 뭐가 남았는데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "마을은 계속 자랄 수 있다. 더 정리하고, 더 만들고, 더 움직이면 이곳은 더 좋아질 거다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그건 알겠는데, 나한테도 좋은 게 있어?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "당연하지. 계속 손을 보태면 자네도 조금씩 더 단단해질 테니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "오, 드물게 멀쩡한 말이다."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "그리고 무엇보다! 저 거대한 동상을 매일 보게 되면 자존감이 이상한 방향으로라도 조금은 올라갈 가능성이 있다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "그건 도움의 방식이 너무 이상하잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "그러니 앞으로도 힘써라, 애드! 이 마을을 위해! 자네 자신을 위해! 그리고 무엇보다 저 위대한 곰 동상의 권위를 위해!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "마지막 목적이 제일 이상해!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "좋다! 이제 다시 일하러 가자! 문명은 멈추지 않는다! 동상도 지켜보고 있다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "제발 그 동상에 감시 기능 같은 건 없다고 해 줘..."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "후후후..."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "왜 부정 안 해!!!"
+    }
+  ]
+}

@@ -634,11 +634,12 @@ body.body-scroll-lock {
 
 .asrs-image {
   display: block;
-  width: 100%;
+  width: 70%;
   height: auto;
-  max-height: 220px;
+  max-height: 154px;
   object-fit: contain;
   border-radius: 0.8rem;
+  margin: 0 auto;
 }
 
 .dsm-image-panel {
@@ -649,11 +650,12 @@ body.body-scroll-lock {
 
 .dsm-image {
   display: block;
-  width: 100%;
+  width: 70%;
   height: auto;
-  max-height: 260px;
+  max-height: 182px;
   object-fit: contain;
   border-radius: 0.8rem;
+  margin: 0 auto;
 }
 
 .chip-success {
@@ -838,6 +840,15 @@ body.body-scroll-lock {
   display: block;
 }
 
+.go-nogo-feedback-layer.is-idle {
+  z-index: 2;
+}
+
+.go-nogo-feedback-layer.is-success,
+.go-nogo-feedback-layer.is-fail {
+  z-index: 3;
+}
+
 .go-nogo-action-zone {
   display: flex;
   flex-direction: column;
@@ -934,6 +945,10 @@ body.body-scroll-lock {
   background: linear-gradient(180deg, #ffacea, #f67adf);
   box-shadow: 0 0 24px rgba(246, 122, 223, 0.3);
   transition: transform 90ms linear;
+}
+
+.balance-ball.is-hidden {
+  opacity: 0;
 }
 
 .hidden {

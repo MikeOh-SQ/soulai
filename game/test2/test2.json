@@ -1,0 +1,164 @@
+{
+  "script_id": "tutorial_react_02_log_timing",
+  "title": "반응성 게임 2 튜토리얼 - 장작패기",
+  "game_type": "react_02_log_timing",
+  "tutorial_rules": {
+    "goal": "통나무가 내려올 때 타이밍에 맞춰 클릭한다",
+    "click_targets": ["log"],
+    "avoid_targets": ["bomb", "carrot"],
+    "success_hint": "통나무가 바닥 근처에 왔을 때 클릭",
+    "fail_hint": "폭탄과 당근은 누르면 안 됨"
+  },
+  "lines": [
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "좋아, 이번에는 장작패기다! 힘과 타이밍, 그리고 최소한의 품격이 필요한 작업이지!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "아까는 최소한의 이성이라더니 이번엔 품격이야?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "위대한 작업엔 언제나 여러 해석이 가능한 법이다."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "규칙은 간단하다. 통나무가 위에서 내려오면, 바닥 근처에서 타이밍 맞춰 클릭해라."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "좋아. 통나무는 타이밍 맞춰 클릭."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "너무 빠르면 성급하고, 너무 늦으면 둔하다. 우리는 지금 아름다운 장작패기를 추구한다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "장작패기에 왜 미학을 붙이는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "하지만 폭탄이 내려오면 절대 누르지 마라!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그건 당연하지."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "그리고 당근이 내려와도 절대 누르지 마라."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "왜 갑자기 그 부분만 유난히 진지해져?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "당근은 장작이 아니다. 그리고 장작이 아닌 것을 함부로 내리치는 자에겐 결국 혼란만이 남는다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "아니, 폭탄보다 당근 쪽을 더 진지하게 다루는 게 이상하다고."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "폭탄은 원래 위험하다. 하지만 당근은 소중하다. 둘은 전혀 다른 차원의 문제지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "잠깐, 그럼 너 지금 폭탄보다 당근을 더 아끼는 거야?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "비교 자체가 무례하군. 당근은 당근의 영역에 있다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "하나도 설명이 안 됐어."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "아무튼 기억해 둬라. 통나무는 클릭, 폭탄은 금지, 당근은 특히 금지다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "왜 당근만 '특히'가 붙는데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "당근은 귀하고, 아름답고, 가능성이 있으며, 때로는 간식이고, 때로는 상징이며, 무엇보다 내 것이다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "결국 사심이잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "다시 정리한다. 통나무가 내려오면 타이밍 맞춰 클릭. 폭탄과 당근은 절대 클릭 금지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_determined",
+      "expression_kr": "결심함 / 다시 해보려 함",
+      "text": "오케이. 통나무만 친다. 폭탄은 위험해서 안 누르고, 당근은 네가 귀찮으니까 안 누른다."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "좋다. 드디어 자네도 당근 보호의 중요성을 이해했군."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "이해한 적 없어!"
+    }
+  ]
+}

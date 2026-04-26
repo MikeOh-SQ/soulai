@@ -1,5 +1,5 @@
 {
-  "title": "ASRS",
+  "title": "자가보고 선별",
   "description": "최근 6개월을 기준으로 선택해 주세요.",
   "scale": [
     { "value": 0, "label": "전혀 그렇지 않다" },

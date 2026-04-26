@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADHDQQ Forest</title>
+    <link rel="stylesheet" href="/dtx/dtx.css?v=3" />
+  </head>
+  <body>
+    <main id="app" class="app">
+      <img id="bg" class="bg" alt="" />
+
+      <section class="topbar">
+        <div class="chip-row">
+          <span id="user-chip" class="chip">사용자 없음</span>
+          <span id="score-chip" class="chip chip-score">0점</span>
+          <span id="stage-chip" class="chip">stage1</span>
+        </div>
+      </section>
+
+      <section id="loading-view" class="panel center-panel">
+        <h1 class="title">숲으로 들어가는 중</h1>
+        <p class="muted">사용자 정보를 불러오고 있습니다.</p>
+      </section>
+
+      <section id="empty-view" class="panel center-panel hidden">
+        <h1 class="title">사용자 ID가 필요합니다</h1>
+        <p class="muted">`/dtx?id=test01` 형식으로 접속하거나 아래에서 불러오세요.</p>
+        <form id="id-form" class="stack">
+          <input id="user-id-input" class="text-input" placeholder="예: test01" />
+          <button class="action-button" type="submit">숲 불러오기</button>
+          <button id="guest-button" class="action-button action-button-ghost" type="button">guest로 테스트</button>
+        </form>
+      </section>
+
+      <section id="menu-view" class="menu-view hidden">
+        <header class="panel hero">
+          <h1 class="title">오늘의 숲</h1>
+          <p class="muted">플랜과 미니게임을 오가며 점수를 모아, 숲을 조금씩 더 멋진 마을로 바꿔보세요.</p>
+        </header>
+
+        <div class="menu-grid">
+          <button class="panel icon-card" type="button" data-nav="plangame">
+            <span class="icon">🌿</span>
+            <strong>Plan</strong>
+          </button>
+          <button class="panel icon-card" type="button" data-nav="test1">
+            <span class="icon">🎯</span>
+            <strong>Build</strong>
+          </button>
+          <button class="panel icon-card" type="button" data-nav="test2">
+            <span class="icon">🪵</span>
+            <strong>Chop</strong>
+          </button>
+        </div>
+      </section>
+
+      <section id="event-overlay" class="event-overlay hidden" aria-live="polite">
+        <section class="characters" aria-hidden="true">
+          <img id="event-add" class="character character-add" alt="" />
+          <img id="event-lumen" class="character character-lumen" alt="" />
+        </section>
+
+        <section id="event-bubble" class="bubble hidden">
+          <div id="event-meta" class="meta"></div>
+          <p id="event-text" class="text"></p>
+        </section>
+
+        <div id="event-hint" class="event-hint">클릭해서 다음</div>
+      </section>
+    </main>
+
+    <script src="/dtx/common.js?v=1"></script>
+    <script src="/dtx/dtx.js?v=3"></script>
+  </body>
+</html>

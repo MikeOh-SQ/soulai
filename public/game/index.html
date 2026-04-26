@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADHDQQ Game Story</title>
+    <link rel="stylesheet" href="/game/game.css" />
+  </head>
+  <body>
+    <main id="app" class="app" role="button" tabindex="0" aria-label="스토리 진행">
+      <img id="bg" class="bg" alt="" />
+
+      <section class="characters" aria-hidden="true">
+        <img id="add" class="character character-add" alt="" />
+        <img id="lumen" class="character character-lumen" alt="" />
+      </section>
+
+      <section id="bubble" class="bubble hidden" aria-live="polite">
+        <div id="meta" class="meta"></div>
+        <p id="text" class="text"></p>
+      </section>
+
+      <div id="hint" class="hint">클릭해서 시작</div>
+    </main>
+
+    <script src="/game/game.js"></script>
+  </body>
+</html>

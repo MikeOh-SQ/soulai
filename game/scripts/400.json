@@ -1,0 +1,187 @@
+{
+  "script_id": "event_400_points_second_house_01",
+  "title": "두 번째 집과 떡밥",
+  "stage": "stage3",
+  "lines": [
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "어? 잠깐만. 저기 또 뭔가 생기는데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "후후, 당연하지. 400점이다. 숲도 이제 슬슬 부동산의 맛을 알아가는 중이거든."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "왜 성장 연출을 그렇게 자본주의적으로 표현해?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "보아라! 벽이 서고, 지붕이 얹히고, 문이 달린다! 이것이 바로 문명의 연쇄 진화!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "오... 진짜네. 집이 하나 더 생겼어."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "흥, 자네도 이제 슬슬 알겠지? 자네의 우당탕탕이 생각보다 생산적이었다는 사실을."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "표현은 마음에 안 들지만, 결과는 꽤 마음에 들어."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "근데 저 집은 뭐야? 전에 생긴 집이랑은 좀 느낌이 다른데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "아, 저거? 저건 나중에 올 손님을 위한 시설이다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "손님?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "그래. 아주 깔끔하고, 아주 예민하고, 아주 피곤할 정도로 반듯한 여우가 한 마리 있거든."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "뭔가 벌써 성격이 힘들어 보이는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "그 여우는 모든 것이 제자리에 있어야 안심하는 타입이지. 컵의 각도, 창문의 높이, 책장의 순서, 양말의 좌우 밸런스까지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "와, 벌써 숨 막혀."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "후후, 그래서 저 시설이 필요한 거다. 아주 섬세하고, 아주 정교하고, 아주 비싼 유지비가 들어가는 공간이지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "잠깐, 그럼 저거 그 여우를 위한 시설이야?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "맞다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그런 중요한 걸 왜 이제 말해?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "그건 비즈니스니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "설명이 하나도 안 됐거든?!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "괜찮다! 지금 자네가 알 필요는 없다! 아직은 때가 아니야! 떡밥은 던져졌을 뿐!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "방금 엄청 메타적으로 말했지?!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "아무튼 중요한 건, 자네 덕분에 숲이 점점 넓어지고 있다는 거다. 눈에 보이게 말이지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...그건 확실히 좀 뿌듯하네."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "좋은 일이다. 자네는 지금 단순히 점수만 모으는 게 아니다. 누군가 들어와 머물 수 있는 자리를 만들고 있으니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "...예전엔 나 하나 챙기기도 벅찼는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "그래서 더 대단한 거다. 자기 자리도 없던 곰이, 이제는 남의 자리를 만들고 있으니."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_determined",
+      "expression_kr": "결심함 / 다시 해보려 함",
+      "text": "...좋아. 그럼 저 수상한 여우가 와도 버틸 수 있을 정도로 더 발전시켜 보자."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "훌륭하다! 아주 좋다! 그 기세라면 다음엔 더 복잡하고, 더 까다롭고, 더 귀찮은 손님이 와도 문제없다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "왜 점점 홍보 문구가 아니라 경고문이 되어 가는 거야!"
+    }
+  ]
+}

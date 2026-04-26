@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ADHDQQ Plan Game</title>
+    <link rel="stylesheet" href="/plangame/plangame.css?v=3" />
+  </head>
+  <body>
+    <main id="app" class="app">
+      <img id="bg" class="bg" alt="" />
+
+      <section class="topbar">
+        <div class="chip-group">
+          <span id="user-chip" class="chip">사용자 없음</span>
+          <span id="score-chip" class="chip chip-score">숲 점수 0점</span>
+          <span id="local-score-chip" class="chip">플랜 점수 0점</span>
+        </div>
+        <div class="topbar-actions">
+          <button id="forest-button" class="button button-ghost" type="button">숲으로 돌아가기</button>
+          <button id="guide-button" class="button button-ghost" type="button">사용법 보기</button>
+        </div>
+      </section>
+
+      <section id="loading-view" class="card center-card">
+        <h1 class="title">플랜 게임</h1>
+        <p class="muted">사용자 계획을 불러오는 중입니다.</p>
+      </section>
+
+      <section id="empty-view" class="card center-card hidden">
+        <h1 class="title">사용자 ID가 필요합니다</h1>
+        <p class="muted">`/plangame?id=test01` 형식으로 접속하거나 아래에 ID를 입력하세요.</p>
+        <form id="id-form" class="stack" autocomplete="off">
+          <input id="user-id-input" class="text-input" placeholder="예: test01" />
+          <button class="button" type="submit">불러오기</button>
+        </form>
+      </section>
+
+      <section id="game-view" class="game-view hidden" aria-live="polite">
+        <header class="hero card">
+          <h1 class="title">오늘의 목표 3가지</h1>
+          <p class="muted">목표를 누르면 완료 패널이 열립니다. 완료 시 10점을 얻고, 같은 목표는 1시간 뒤 다시 완료할 수 있습니다.</p>
+        </header>
+
+        <div id="goal-list" class="goal-list"></div>
+      </section>
+
+      <section id="tutorial-overlay" class="tutorial-overlay hidden" aria-live="polite">
+        <section class="characters" aria-hidden="true">
+          <img id="add-character" class="character character-add" alt="" />
+          <img id="lumen-character" class="character character-lumen" alt="" />
+        </section>
+
+        <section id="tutorial" class="tutorial hidden">
+          <div id="tutorial-speaker" class="tutorial-speaker"></div>
+          <p id="tutorial-text" class="tutorial-text"></p>
+        </section>
+
+        <div class="hint">클릭해서 다음</div>
+      </section>
+
+      <dialog id="guide-modal" class="modal">
+        <div class="modal-card">
+          <h2 class="modal-title">사용법</h2>
+          <p>목표 버튼을 누르면 완료 패널이 열립니다.</p>
+          <p>완료 버튼을 누를 때마다 10점을 얻습니다.</p>
+          <p>같은 목표는 1시간 뒤 다시 완료할 수 있습니다.</p>
+          <p>`...` 버튼을 누르면 목표 문구를 수정할 수 있고, 수정하면 그 목표의 완료 기록은 초기화됩니다.</p>
+          <form method="dialog">
+            <button class="button" type="submit">닫기</button>
+          </form>
+        </div>
+      </dialog>
+    </main>
+
+    <script src="/dtx/common.js?v=1"></script>
+    <script src="/plangame/plangame.js?v=3"></script>
+  </body>
+</html>

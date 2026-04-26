@@ -28,12 +28,12 @@ const state = {
 };
 
 const routes = [
-  { key: "intro", label: "Intro", icon: "info" },
-  { key: "asrs", label: "ASRS", icon: "quiz" },
-  { key: "dsm", label: "DSM", icon: "checklist" },
-  { key: "game", label: "React", icon: "neurology" },
-  { key: "report", label: "Report", icon: "analytics" },
-  { key: "plan", label: "Plan", icon: "event_note" }
+  { key: "intro", label: "ID", icon: "info" },
+  { key: "asrs", label: "SELF", icon: "quiz" },
+  { key: "dsm", label: "SYM", icon: "checklist" },
+  { key: "game", label: "REACT", icon: "neurology" },
+  { key: "report", label: "RESULT", icon: "analytics" },
+  { key: "plan", label: "PLAN", icon: "event_note" }
 ];
 
 const app = document.querySelector("#app");
@@ -76,9 +76,12 @@ const SIGNAL_FEEDBACK_IMAGES = {
   fail: `${SIGNAL_IMAGE_BASE_PATH}/fail.png`
 };
 const GO_NOGO_IMAGE_BASE_PATH = "/react2";
-const GO_NOGO_STIMULUS_DURATION_MS = 300;
+const GO_NOGO_GIF_DURATION_MS = 500;
+const GO_NOGO_STIMULUS_DURATION_MS = GO_NOGO_GIF_DURATION_MS;
 const GO_NOGO_ISI_OPTIONS_MS = [800, 1000, 1200];
 const GO_NOGO_MIN_VALID_RT_MS = 100;
+const GO_NOGO_SUCCESS_MIN_RT_MS = 220;
+const GO_NOGO_APPLE_TOUCH_VISUAL_OFFSET_MS = 380;
 const GO_NOGO_FAST_RESPONSE_MS = 200;
 const BALANCE_PRACTICE_DURATION_MS = 8000;
 const GO_NOGO_BACKGROUND_IMAGE = `${GO_NOGO_IMAGE_BASE_PATH}/back.gif`;
@@ -103,6 +106,7 @@ const gameRuntime = {
   listeners: [],
   activeTrial: null,
   pointerControl: { x: 0, y: 0 },
+  balanceTouchActive: false,
   balanceSamples: [],
   lastBalanceSampleAt: 0,
   currentPhase: null,
@@ -330,11 +334,11 @@ function analyzeAsrs(record = state.currentRecord) {
   const isComplete = answers.length === 6;
   const severity = totalPositive >= 4 ? "비교적 높음" : "관찰 필요";
 
-  let summary = "현재 응답만으로는 뚜렷한 ASRS 양상이 많지 않습니다.";
+  let summary = "현재 응답만으로는 뚜렷한 자가보고 선별 신호가 많지 않습니다.";
   if (totalPositive >= 4) {
-    summary = "ASRS에서 유의미한 문항이 4개 이상으로 나타나 추가 평가를 고려할 만한 패턴입니다.";
+    summary = "자가보고 선별에서 유의미한 문항이 4개 이상으로 나타나 추가 평가를 고려할 만한 패턴입니다.";
   } else if (totalPositive >= 2) {
-    summary = "ASRS에서 일부 주의집중 또는 실행기능 관련 어려움이 관찰되어 맥락을 함께 볼 필요가 있습니다.";
+    summary = "자가보고 선별에서 일부 주의집중 또는 실행기능 관련 어려움이 관찰되어 맥락을 함께 볼 필요가 있습니다.";
   }
 
   const attentionMessage = attentionPositive
@@ -377,7 +381,7 @@ function analyzeDsm(record = state.currentRecord) {
   const isComplete = completedCount === totalQuestions;
 
   let subtype = "판정 보류";
-  let summary = "아직 DSM-5 문항 응답이 충분하지 않아 임시 집계만 표시합니다.";
+  let summary = "아직 증상 기준 체크 응답이 충분하지 않아 임시 집계만 표시합니다.";
   let detail = "최근 6개월 동안의 반복 패턴을 기준으로 끝까지 응답하면 유형 분류를 확인할 수 있습니다.";
 
   if (isComplete) {
@@ -395,7 +399,7 @@ function analyzeDsm(record = state.currentRecord) {
       detail = "안절부절함, 즉각 반응, 기다리기 어려움과 같은 패턴이 상대적으로 크게 보입니다.";
     } else {
       subtype = "무증상 범위";
-      summary = "현재 DSM-5 선별 기준상 뚜렷한 유형 신호는 크지 않습니다.";
+      summary = "현재 증상 기준 체크에서는 뚜렷한 유형 신호는 크지 않습니다.";
       detail = "지금 응답만으로는 특정 유형 가능성이 기준 이상으로 모이지 않았습니다.";
     }
   } else {
@@ -421,7 +425,7 @@ function analyzeDsm(record = state.currentRecord) {
 
 function buildLocalDsmQuickAnalysis(record = state.currentRecord) {
   const analysis = analyzeDsm(record);
-  let subtypeText = "현재 응답만으로는 DSM-5 기준 분류를 확정하기보다 전체 맥락을 함께 보는 것이 적절합니다.";
+  let subtypeText = "현재 응답만으로는 기준 분류를 확정하기보다 전체 맥락을 함께 보는 것이 적절합니다.";
   if (analysis.isComplete) {
     if (analysis.subtype === "복합형 가능성") {
       subtypeText = "부주의와 과잉행동·충동성 신호가 함께 나타나 두 영역을 같이 살펴볼 필요가 있습니다.";
@@ -430,7 +434,7 @@ function buildLocalDsmQuickAnalysis(record = state.currentRecord) {
     } else if (analysis.subtype === "과잉행동·충동형 가능성") {
       subtypeText = "즉각 반응, 안절부절함, 기다리기 어려움과 같은 신호가 상대적으로 더 두드러집니다.";
     } else {
-      subtypeText = "현재 응답에서는 DSM-5 선별 기준상 뚜렷한 유형 신호가 크게 모이지 않았습니다.";
+      subtypeText = "현재 응답에서는 증상 기준 체크상 뚜렷한 유형 신호가 크게 모이지 않았습니다.";
     }
   }
 
@@ -775,6 +779,7 @@ function cleanupGameRuntime() {
   gameRuntime.listeners = [];
   gameRuntime.activeTrial = null;
   gameRuntime.balanceSamples = [];
+  gameRuntime.balanceTouchActive = false;
   gameRuntime.lastBalanceSampleAt = 0;
   gameRuntime.currentPhase = null;
   gameRuntime.currentTestKey = null;
@@ -924,29 +929,36 @@ function buildGoNoGoTrials(count, goRatio) {
   const trials = [];
   let remainingGo = goCount;
   let remainingNoGo = nogoCount;
-  let recentNoGo = 0;
+  let consecutiveGo = 0;
 
   for (let index = 0; index < count; index += 1) {
-    const canPlaceNoGo = remainingNoGo > 0 && recentNoGo === 0 && remainingGo <= (count - index - 1);
-    const shouldPlaceNoGo = canPlaceNoGo && index >= 2 && Math.random() < (remainingNoGo / Math.max(count - index, 1));
+    const remainingSlots = count - index;
+    const mustReserveGoPrefix = consecutiveGo < 2 ? 2 - consecutiveGo : 0;
+    const mustPlaceGo = remainingGo > 0 && (remainingGo === remainingSlots || consecutiveGo < 2);
+    const canPlaceNoGo = remainingNoGo > 0
+      && consecutiveGo >= 2
+      && remainingGo >= 0
+      && remainingSlots - 1 >= remainingGo + Math.max(remainingNoGo - 1, 0) + mustReserveGoPrefix
+      && !mustPlaceGo;
+    const shouldPlaceNoGo = canPlaceNoGo && Math.random() < (remainingNoGo / Math.max(remainingSlots, 1));
 
     if (shouldPlaceNoGo) {
       trials.push({ stimulusType: "nogo", imageSrc: GO_NOGO_STIMULUS_IMAGES.nogo, label: "엑스" });
       remainingNoGo -= 1;
-      recentNoGo = 1;
+      consecutiveGo = 0;
       continue;
     }
 
     if (remainingGo > 0) {
       trials.push({ stimulusType: "go", imageSrc: GO_NOGO_STIMULUS_IMAGES.go, label: "원" });
       remainingGo -= 1;
-      recentNoGo = 0;
+      consecutiveGo += 1;
       continue;
     }
 
     trials.push({ stimulusType: "nogo", imageSrc: GO_NOGO_STIMULUS_IMAGES.nogo, label: "엑스" });
     remainingNoGo -= 1;
-    recentNoGo = 1;
+    consecutiveGo = 0;
   }
 
   return trials;
@@ -959,8 +971,8 @@ function buildGoNoGoPracticeTrials() {
     { stimulusType: "nogo", imageSrc: GO_NOGO_STIMULUS_IMAGES.nogo, label: "엑스" },
     { stimulusType: "go", imageSrc: GO_NOGO_STIMULUS_IMAGES.go, label: "원" },
     { stimulusType: "go", imageSrc: GO_NOGO_STIMULUS_IMAGES.go, label: "원" },
-    { stimulusType: "go", imageSrc: GO_NOGO_STIMULUS_IMAGES.go, label: "원" },
     { stimulusType: "nogo", imageSrc: GO_NOGO_STIMULUS_IMAGES.nogo, label: "엑스" },
+    { stimulusType: "go", imageSrc: GO_NOGO_STIMULUS_IMAGES.go, label: "원" },
     { stimulusType: "go", imageSrc: GO_NOGO_STIMULUS_IMAGES.go, label: "원" }
   ];
 }
@@ -1483,6 +1495,9 @@ function startGoNoGoMain() {
 
 function runGoNoGoTrials(trials, stage) {
   cleanupGameRuntime();
+  const isAppleTouchDevice = /iPhone|iPad|iPod/i.test(navigator.userAgent || "")
+    || (navigator.platform === "MacIntel" && Number(navigator.maxTouchPoints || 0) > 1);
+  const visualOffsetMs = isAppleTouchDevice ? GO_NOGO_APPLE_TOUCH_VISUAL_OFFSET_MS : 0;
   const metrics = {
     goCount: trials.filter((trial) => trial.stimulusType === "go").length,
     nogoCount: trials.filter((trial) => trial.stimulusType === "nogo").length,
@@ -1595,7 +1610,7 @@ function runGoNoGoTrials(trials, stage) {
       stage,
       trialIndex,
       trialStart,
-      responseDeadline: trialStart + GO_NOGO_STIMULUS_DURATION_MS + isiDuration,
+      responseDeadline: trialStart + GO_NOGO_STIMULUS_DURATION_MS + visualOffsetMs,
       nextTrialAt: trialStart + GO_NOGO_STIMULUS_DURATION_MS + isiDuration,
       onsetMs: Math.round(trialStart - metrics.sessionStartAt),
       metrics: trialMetrics
@@ -1619,17 +1634,9 @@ function runGoNoGoTrials(trials, stage) {
 
     scheduleTimeout(() => {
       if (state.gameUi?.activeTestKey === "go_nogo") {
-        let feedbackState = "success";
-        if (trial.stimulusType === "go") {
-          if (trialMetrics.responseType !== "hit") {
-            feedbackState = "fail";
-          }
-        } else if (trialMetrics.responseType !== "none") {
-          feedbackState = "fail";
-        }
         renderGameUi({
           stimulusVisible: false,
-          goNoGoFeedbackState: feedbackState,
+          goNoGoFeedbackState: trialMetrics.responseType === "none" ? "idle" : state.gameUi?.goNoGoFeedbackState || "idle",
           responseWindowState: "closing"
         });
       }
@@ -1664,7 +1671,7 @@ function runGoNoGoTrials(trials, stage) {
           reaction_time: trialMetrics.reactionTime || null
         });
       }
-    }, GO_NOGO_STIMULUS_DURATION_MS + isiDuration - 60);
+    }, GO_NOGO_STIMULUS_DURATION_MS + visualOffsetMs);
 
     scheduleTimeout(() => {
       trialIndex += 1;
@@ -1700,13 +1707,17 @@ function runGoNoGoTrials(trials, stage) {
       return;
     }
 
+    if (activeTrial.metrics.reactionTime < GO_NOGO_SUCCESS_MIN_RT_MS + visualOffsetMs) {
+      activeTrial.metrics.responseType = "premature";
+      metrics.prematureResponseCount += 1;
+      renderGameUi({ goNoGoFeedbackState: "fail" });
+      return;
+    }
+
     if (now <= activeTrial.responseDeadline) {
       activeTrial.metrics.responseType = "hit";
       metrics.goHitCount += 1;
       metrics.goReactionTimes.push(activeTrial.metrics.reactionTime);
-      if (activeTrial.metrics.reactionTime < GO_NOGO_FAST_RESPONSE_MS) {
-        metrics.prematureResponseCount += 1;
-      }
       renderGameUi({ goNoGoFeedbackState: "success" });
       return;
     }
@@ -1723,28 +1734,99 @@ function handleGoNoGoTap() {
   }
 }
 
+function attachLongTouchBalanceListeners() {
+  const getLongTouchPosition = (touch) => {
+    const target = document.querySelector(".balance-target");
+    if (!target || !touch) {
+      return { x: 1.1, y: 1.1, inside: false };
+    }
+    const rect = target.getBoundingClientRect();
+    const centerX = rect.left + (rect.width / 2);
+    const centerY = rect.top + (rect.height / 2);
+    const radius = Math.min(rect.width, rect.height) / 2;
+    const dx = touch.clientX - centerX;
+    const dy = touch.clientY - centerY;
+    const normalizedX = clamp(dx / radius, -1.4, 1.4);
+    const normalizedY = clamp(dy / radius, -1.4, 1.4);
+    return {
+      x: normalizedX,
+      y: normalizedY,
+      inside: Math.sqrt(dx ** 2 + dy ** 2) <= radius
+    };
+  };
+
+  const setLongTouchState = (position) => {
+    gameRuntime.balanceTouchActive = Boolean(position?.inside);
+    gameRuntime.pointerControl = position
+      ? { x: position.x, y: position.y }
+      : { x: 1.1, y: 1.1 };
+  };
+
+  addGameListener(window, "touchstart", (event) => {
+    const arena = document.querySelector(".balance-arena");
+    const target = event.target;
+    if (!(target instanceof Element) || !arena || !arena.contains(target)) {
+      return;
+    }
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+    setLongTouchState(getLongTouchPosition(event.touches?.[0]));
+  }, { passive: false });
+
+  addGameListener(window, "touchmove", (event) => {
+    const touch = event.touches?.[0];
+    if (!touch) {
+      setLongTouchState(null);
+      return;
+    }
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+    setLongTouchState(getLongTouchPosition(touch));
+  }, { passive: false });
+
+  addGameListener(window, "touchend", () => {
+    setLongTouchState(null);
+  }, { passive: false });
+
+  addGameListener(window, "touchcancel", () => {
+    setLongTouchState(null);
+  }, { passive: false });
+}
+
 async function startBalanceCalibration(mode = "practice") {
   cleanupGameRuntime();
-  const supportsDeviceMotion = typeof window.DeviceMotionEvent !== "undefined" || typeof window.DeviceOrientationEvent !== "undefined";
-  const usingPointerFallback = !supportsDeviceMotion;
+  const isLikelyMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "")
+    || Number(navigator.maxTouchPoints || 0) > 1;
+  const supportsDeviceMotion = isLikelyMobile
+    && (typeof window.DeviceMotionEvent !== "undefined" || typeof window.DeviceOrientationEvent !== "undefined");
+  const supportsTouchFallback = "ontouchstart" in window || Number(navigator.maxTouchPoints || 0) > 0;
+  let inputSource = supportsDeviceMotion ? "sensor" : supportsTouchFallback ? "long_touch" : "pointer";
 
-  if (!usingPointerFallback && typeof DeviceMotionEvent?.requestPermission === "function") {
+  if (inputSource === "sensor" && typeof DeviceMotionEvent?.requestPermission === "function") {
     const permission = await DeviceMotionEvent.requestPermission().catch(() => "denied");
     if (permission !== "granted") {
-      setStatus("모션 센서 권한이 필요합니다. 권한 허용 후 다시 시도해 주세요.");
-      resetGameUi();
-      return;
+      inputSource = supportsTouchFallback ? "long_touch" : "pointer";
+      setStatus(inputSource === "long_touch"
+        ? "모션 센서를 사용할 수 없어 롱터치 방식으로 진행합니다."
+        : "모션 센서를 사용할 수 없어 마우스/터치 방식으로 진행합니다.");
     }
   }
 
-  gameRuntime.pointerControl = { x: 0, y: 0 };
+  gameRuntime.pointerControl = inputSource === "long_touch" ? { x: 1.1, y: 1.1 } : { x: 0, y: 0 };
+  gameRuntime.balanceTouchActive = false;
   gameRuntime.balanceSamples = [];
   renderGameUi({
     phase: "countdown",
     activeTestKey: "balance_hold",
     stage: mode === "practice" ? "practice-calibration" : "calibration",
     countdown: 2,
-    message: usingPointerFallback ? "센서가 없어 마우스/터치 시뮬레이션으로 진행합니다." : "기기를 편안하게 잡고 2초간 기준점을 맞춥니다."
+    message: inputSource === "sensor"
+      ? "기기를 편안하게 잡고 2초간 기준점을 맞춥니다."
+      : inputSource === "long_touch"
+        ? "센서를 사용할 수 없어 중앙 원을 길게 누르는 방식으로 진행합니다."
+        : "센서가 없어 마우스/터치 시뮬레이션으로 진행합니다."
   });
 
   const handleOrientation = (event) => {
@@ -1771,15 +1853,17 @@ async function startBalanceCalibration(mode = "practice") {
     };
   };
 
-  if (usingPointerFallback) {
+  if (inputSource === "pointer") {
     addGameListener(window, "mousemove", handlePointer);
     addGameListener(window, "touchmove", handlePointer, { passive: false });
-  } else {
+  } else if (inputSource === "sensor") {
     addGameListener(window, "deviceorientation", handleOrientation);
+  } else if (inputSource === "long_touch") {
+    attachLongTouchBalanceListeners();
   }
 
   await new Promise((resolve) => scheduleTimeout(resolve, 2000));
-  startBalanceHold(usingPointerFallback ? "pointer" : "sensor", mode);
+  startBalanceHold(inputSource, mode);
 }
 
 function startBalanceHold(inputSource, mode = "main") {
@@ -1793,6 +1877,7 @@ function startBalanceHold(inputSource, mode = "main") {
   let previousLarge = false;
   const rawSamples = [];
   const isPointerMode = inputSource === "pointer";
+  const isLongTouchMode = inputSource === "long_touch";
   const pointerTarget = {
     currentX: 0,
     currentY: 0,
@@ -1834,7 +1919,12 @@ function startBalanceHold(inputSource, mode = "main") {
   const durationMs = mode === "practice" ? BALANCE_PRACTICE_DURATION_MS : GAME_META.balance_hold.durationMs;
   const prompt = isPointerMode
     ? "움직이는 원을 따라가며 공을 안쪽에 유지하세요."
+    : isLongTouchMode
+      ? "중앙 원을 길게 눌러 공을 안쪽에 유지하세요."
     : "중앙 원 안에 공을 오래 유지하세요.";
+  const initialX = isLongTouchMode ? gameRuntime.pointerControl.x : 0;
+  const initialY = isLongTouchMode ? gameRuntime.pointerControl.y : 0;
+  const initialDistance = Math.sqrt(initialX ** 2 + initialY ** 2);
 
   renderGameUi({
     phase: "running",
@@ -1842,7 +1932,15 @@ function startBalanceHold(inputSource, mode = "main") {
     stage: mode,
     prompt,
     progressPercent: 0,
-    balance: { x: 0, y: 0, targetX: 0, targetY: 0, distance: 0, inside: true, inputSource }
+    balance: {
+      x: initialX,
+      y: initialY,
+      targetX: 0,
+      targetY: 0,
+      distance: initialDistance,
+      inside: isLongTouchMode ? gameRuntime.balanceTouchActive : true,
+      inputSource
+    }
   });
   gameRuntime.liveDomUpdater = updateLiveGameDom;
 
@@ -1855,12 +1953,15 @@ function startBalanceHold(inputSource, mode = "main") {
     const relativeX = x - targetPosition.x;
     const relativeY = y - targetPosition.y;
     const distance = Math.sqrt(relativeX ** 2 + relativeY ** 2);
-    const inside = distance <= 0.48;
-    const isLarge = distance >= 0.9;
+    const stableRadius = isLongTouchMode ? 0.24 : 0.48;
+    const softRadius = isLongTouchMode ? 0.42 : 0.62;
+    const inside = distance <= softRadius;
+    const isLarge = distance >= (isLongTouchMode ? 0.75 : 0.9);
     const magnitude = Math.sqrt(relativeX ** 2 + relativeY ** 2);
+    const stabilityCredit = distance <= stableRadius ? 0.1 : distance <= softRadius ? 0.04 : 0;
 
-    if (inside) {
-      stableHoldTime += 0.1;
+    if (stabilityCredit > 0) {
+      stableHoldTime += stabilityCredit;
     }
     if (isLarge && !previousLarge) {
       largeMotionCount += 1;
@@ -2262,8 +2363,8 @@ function computeLocalReportViewModel(record = state.currentRecord) {
     crossCheck: {
       subjectiveTitle: report.crossCheck?.subjectiveTitle || `주관적 보고는 ${subjectiveDomain} 쪽이 더 크게 느껴져요`,
       subjectiveText: report.crossCheck?.subjectiveText || (subjectiveDomain === "부주의"
-        ? "ASRS 응답에서는 집중 유지, 시작 지연, 마감 관리와 같은 부주의 신호가 조금 더 강조됐어요."
-        : "ASRS 응답에서는 즉각 반응, 기다리기 어려움 같은 충동성 신호가 조금 더 강조됐어요."),
+        ? "자가보고 응답에서는 집중 유지, 시작 지연, 마감 관리와 같은 부주의 신호가 조금 더 강조됐어요."
+        : "자가보고 응답에서는 즉각 반응, 기다리기 어려움 같은 충동성 신호가 조금 더 강조됐어요."),
       objectiveTitle: report.crossCheck?.objectiveTitle || `객관적 반응은 ${objectiveDomain} 쪽 신호가 더 보여요`,
       objectiveText: report.crossCheck?.objectiveText || (objectiveDomain === "부주의"
         ? "반응성 테스트에서는 목표를 놓치거나 반응시간이 흔들리는 패턴이 상대적으로 더 보였어요."
@@ -2274,8 +2375,8 @@ function computeLocalReportViewModel(record = state.currentRecord) {
         : "평소 체감과 검사 상황의 반응이 다르게 나타나서 환경 영향까지 함께 볼 필요가 있어요.")
     },
     profile: {
-      inattentionSummary: report.profile?.inattentionSummary || "부주의 영역은 ASRS 응답과 목표 놓침, 반응시간 변동성, 느리게 처지는 반응 폭을 함께 봤을 때 현재 집중 유지의 일관성을 점검해 볼 필요가 있어 보여요.",
-      impulsivitySummary: report.profile?.impulsivitySummary || "충동성 영역은 ASRS 응답과 잘못된 반응 비율, 성급 반응 비율을 함께 봤을 때 속도보다 멈추는 조절을 연습하는 것이 도움이 될 수 있어요."
+      inattentionSummary: report.profile?.inattentionSummary || "부주의 영역은 자가보고 응답과 목표 놓침, 반응시간 변동성, 느리게 처지는 반응 폭을 함께 봤을 때 현재 집중 유지의 일관성을 점검해 볼 필요가 있어 보여요.",
+      impulsivitySummary: report.profile?.impulsivitySummary || "충동성 영역은 자가보고 응답과 잘못된 반응 비율, 성급 반응 비율을 함께 봤을 때 속도보다 멈추는 조절을 연습하는 것이 도움이 될 수 있어요."
     },
     dailyImpact: {
       level: dailyImpactLevel,
@@ -2396,25 +2497,13 @@ function renderNav() {
     .map((route) => {
       const active = activeRoute === route.key ? "active" : "";
       return `
-        <a href="#" class="nav-item ${active}" data-route="${route.key}">
+        <div class="nav-item ${active}" aria-current="${active ? "page" : "false"}">
           <span class="material-symbols-outlined">${route.icon}</span>
           <span class="label">${route.label}</span>
-        </a>
+        </div>
       `;
     })
     .join("");
-
-  bottomNav.querySelectorAll("[data-route]").forEach((node) => {
-    node.addEventListener("click", (event) => {
-      event.preventDefault();
-      const route = event.currentTarget.getAttribute("data-route");
-      if (route === "report" || route === "plan") {
-        ensureInsights().then(() => navTo(route)).catch((error) => setStatus(error.message));
-        return;
-      }
-      navTo(route);
-    });
-  });
 }
 
 function renderSignalStimulus(stimulus, visible) {
@@ -2444,19 +2533,14 @@ function renderGoNoGoStimulus(stimulus, visible) {
   const feedbackSrc = GO_NOGO_FEEDBACK_IMAGES[feedbackState] || GO_NOGO_FEEDBACK_IMAGES.idle;
   const responseWindowState = state.gameUi?.responseWindowState || "visible";
   const isPending = !visible && responseWindowState === "pending";
-  const showFeedbackLayer = state.gameUi?.activeTestKey === "go_nogo" && state.gameUi?.stage === "practice";
   return `
     <div class="go-nogo-interaction-surface" data-go-nogo-surface>
-      <div class="go-nogo-scene ${visible ? "active" : "ghost"} ${isPending ? "pending-window" : ""}" data-go-nogo-scene role="button" tabindex="0" aria-label="멈춤 버튼 테스트 영역">
+      <div class="go-nogo-scene ${isPending ? "pending-window" : ""}" data-go-nogo-scene role="button" tabindex="0" aria-label="멈춤 버튼 테스트 영역">
         <div class="go-nogo-stage-backdrop" aria-hidden="true"></div>
+        <img class="go-nogo-feedback-layer visible is-${feedbackState}" src="${feedbackSrc}" alt="" aria-hidden="true" draggable="false">
         <div class="go-nogo-stimulus-shell">
-          ${visible
-            ? `<img class="go-nogo-stimulus-image" src="${imageSrc}" alt="" draggable="false">`
-            : `<div class="go-nogo-placeholder ${isPending ? "pending-window" : ""}" aria-hidden="true">${isPending ? "아직 입력 가능" : ""}</div>`
-          }
+          <img class="go-nogo-stimulus-image" src="${imageSrc}" alt="" draggable="false">
         </div>
-        ${isPending ? `<div class="response-window-indicator">같은 시행 입력 가능</div>` : ""}
-        <img class="go-nogo-feedback-layer ${showFeedbackLayer ? "visible" : ""}" src="${feedbackSrc}" alt="" aria-hidden="true" draggable="false">
       </div>
     </div>
   `;
@@ -2467,10 +2551,11 @@ function renderBalanceArena(balance = {}) {
   const y = ((balance.y || 0) * 34).toFixed(1);
   const targetX = ((balance.targetX || 0) * 34).toFixed(1);
   const targetY = ((balance.targetY || 0) * 34).toFixed(1);
+  const shouldHideBall = balance.inputSource === "long_touch" && balance.inside === false;
   return `
     <div class="balance-arena">
       <div data-live-balance-target class="balance-target ${balance.inside === false ? "outside" : ""}" style="transform:translate(${targetX}px, ${targetY}px)">
-        <div data-live-balance-ball class="balance-ball" style="transform:translate(${x}px, ${y}px)"></div>
+        <div data-live-balance-ball class="balance-ball ${shouldHideBall ? "is-hidden" : ""}" style="transform:translate(${x}px, ${y}px)"></div>
       </div>
     </div>
   `;
@@ -2527,6 +2612,7 @@ function updateLiveGameDom(ui) {
       const x = ((ui.balance?.x || 0) * 34).toFixed(1);
       const y = ((ui.balance?.y || 0) * 34).toFixed(1);
       ball.style.transform = `translate(${x}px, ${y}px)`;
+      ball.classList.toggle("is-hidden", ui.balance?.inputSource === "long_touch" && ui.balance?.inside === false);
     }
     if (target) {
       const targetX = ((ui.balance?.targetX || 0) * 34).toFixed(1);
@@ -2566,17 +2652,13 @@ function renderGamePage() {
       <section class="page game-page">
         <div class="panel stack-md">
           <div class="flex items-end justify-between gap-4">
-            <div>
-              <h2 class="title-lg">${meta.title}</h2>
-              <p class="muted">파란색 별만 누르세요.</p>
-            </div>
+            <div></div>
             <span class="chip">1 / ${GAME_ORDER.length}</span>
           </div>
           <div class="progress-bar"><div class="progress-fill" data-live-progress="signal_detection" style="width:${progressPercent}%"></div></div>
         </div>
         <div class="hero-card stack-lg asrs-survey-card">
           ${renderSignalStimulus(ui.stimulus, true)}
-          <p class="muted">다른 색이나 다른 모양은 누르지 않고 넘어가면 됩니다.</p>
           <button class="button-secondary safe-bottom-actions" id="signal-detection-begin-button">시작하기</button>
         </div>
       </section>
@@ -2588,16 +2670,13 @@ function renderGamePage() {
       <section class="page game-page">
         <div class="panel stack-md">
           <div class="flex items-end justify-between gap-4">
-            <div>
-              <h2 class="title-lg">${meta.title}</h2>
-            </div>
+            <div></div>
             <span class="chip">${ui.trialIndex} / ${ui.totalTrials}</span>
           </div>
           <div class="progress-bar"><div class="progress-fill" data-live-progress="signal_detection" style="width:${progressPercent}%"></div></div>
         </div>
         <div class="hero-card stack-lg asrs-survey-card">
           ${renderSignalStimulus(ui.stimulus, ui.stimulusVisible)}
-          <p class="muted">${ui.responseWindowState === "pending" ? "자극은 사라졌지만 아직 같은 시행의 입력 시간이 남아 있습니다." : "목표: 파란 별만 탭. 다른 도형은 무반응."}</p>
         </div>
       </section>
     `;
@@ -2618,7 +2697,7 @@ function renderGamePage() {
         </div>
         <div class="hero-card stack-lg">
           ${renderGoNoGoStimulus(ui.stimulus, ui.stimulusVisible)}
-          <p class="muted">${ui.responseWindowState === "pending" ? "이미지가 사라진 뒤에도 같은 시행 입력 시간이 잠깐 이어집니다." : "동그라미는 누르고, 엑스는 누르지 않습니다."}</p>
+          ${ui.stage === "practice" ? `<p class="muted">동그라미는 누르고, 엑스는 누르지 않습니다.</p>` : ""}
         </div>
       </section>
     `;
@@ -2643,8 +2722,10 @@ function renderGamePage() {
         <div class="hero-card stack-lg">
           ${renderBalanceArena(ui.balance)}
           <p class="muted">${ui.phase === "running"
-            ? (ui.stage === "practice" ? "연습입니다. 중앙 원 안에 공을 유지하는 감각을 먼저 익혀보세요." : "중앙 원 안에 공을 오래 유지하세요.")
-            : (ui.stage === "practice-calibration" ? "정렬 단계가 끝나면 짧은 연습이 시작됩니다." : "정렬 단계가 끝나면 30초 검사로 들어갑니다.")
+            ? (ui.balance?.inputSource === "long_touch"
+                ? (ui.stage === "practice" ? "연습입니다. 중앙 원을 길게 눌러 유지하는 감각을 먼저 익혀보세요." : "중앙 원을 길게 눌러 유지하세요.")
+                : (ui.stage === "practice" ? "연습입니다. 중앙 원 안에 공을 유지하는 감각을 먼저 익혀보세요." : "중앙 원 안에 공을 오래 유지하세요."))
+            : ""
           }</p>
         </div>
       </section>
@@ -2702,14 +2783,6 @@ function renderGamePage() {
         }).join("")}
       </div>
 
-      <div class="game-jump-grid">
-        ${GAME_ORDER.map((key, index) => `
-          <button class="button-ghost game-jump-button" type="button" data-game-select="${key}">
-            ${index + 1}번 ${GAME_META[key].title}
-          </button>
-        `).join("")}
-      </div>
-
       <button class="button-secondary safe-bottom-actions" id="game-start-button">${game.status === "completed" ? "리포트 보기" : completedCount ? "이어하기" : "테스트 시작"}</button>
     </section>
   `;
@@ -2720,12 +2793,9 @@ const pages = {
     return `
       <section class="page">
         <div class="hero-card stack-lg">
-          <div class="flex items-center justify-end">
-            <button class="button-ghost" type="button" id="open-admin-modal" style="padding:0.55rem 0.9rem;font-size:0.8rem">ADMIN</button>
-          </div>
           <div class="stack-md">
             <h2 class="title-xl">ADHD 선별과 감별 <span style="color:#ffacea">ADHDQQ.COM</span></h2>
-            <p class="muted">ASRS, DSM-5, 반응성 테스트를 통해 ADHD유형을 분석합니다.</p>
+            <p class="muted">자가보고 선별, 증상 기준 체크, 반응성 테스트를 통해 ADHD 관련 경향을 분석합니다.</p>
           </div>
           <div class="panel" style="padding:0;overflow:hidden">
             <img
@@ -2758,7 +2828,7 @@ const pages = {
             </div>
             <div class="field">
               <label for="user-id">사용자 ID</label>
-              <input id="user-id" name="userId" class="text-input" placeholder="예: minsu01" required />
+              <input id="user-id" name="userId" class="text-input" placeholder="예: test01" required />
             </div>
             <button class="button-secondary" type="submit">새 ID 만들기</button>
           </form>
@@ -2772,7 +2842,7 @@ const pages = {
               <form id="manual-load-form" class="stack-sm">
                 <div class="field">
                   <label for="existing-user-id">기존 ID 입력</label>
-                  <input id="existing-user-id" name="userId" class="text-input" value="${escapeHtml(state.loadUserId)}" placeholder="예: minsu01" />
+                  <input id="existing-user-id" name="userId" class="text-input" value="${escapeHtml(state.loadUserId)}" placeholder="예: test01" />
                 </div>
                 <button class="button-secondary" type="submit">이 ID로 이동</button>
               </form>
@@ -2795,7 +2865,7 @@ const pages = {
           <div class="stack-sm">
             <div class="survey-header-row">
               <div class="survey-header-main">
-                <h2 class="title-lg asrs-title">${config.title}<span class="muted asrs-title-sub">(Adult ADHD Self-Report Scale)</span></h2>
+                <h2 class="title-lg asrs-title">${config.title}</h2>
                 <p class="muted">${config.description}</p>
               </div>
               <div class="eyebrow survey-header-counter">${state.asrsIndex + 1} / ${config.questions.length}</div>
@@ -2806,7 +2876,7 @@ const pages = {
 
         <div class="hero-card stack-lg asrs-survey-card">
           <div class="panel asrs-image-panel">
-            <img class="asrs-image" src="${currentImage}" alt="ASRS question ${state.asrsIndex + 1}" />
+            <img class="asrs-image" src="${currentImage}" alt="자가보고 선별 문항 ${state.asrsIndex + 1}" />
           </div>
           <p class="asrs-question">${currentQuestion.prompt}</p>
           <div class="panel stack-sm">
@@ -2848,10 +2918,10 @@ const pages = {
     return `
       <section class="page">
         <div class="hero-card stack-lg">
-          <div class="eyebrow">asrs quick analysis</div>
+          <div class="eyebrow">self check analysis</div>
           <p class="muted">${
             showAsrsAiPending
-              ? "AI가 현재 점수 강도를 바탕으로 ASRS 결과를 해석하고 있습니다."
+              ? "AI가 현재 점수 강도를 바탕으로 자가보고 선별 결과를 해석하고 있습니다."
               : state.currentRecord?.asrsAnalysis?.summary
                 ? state.currentRecord.asrsAnalysis.summary
                 : analysis.isComplete
@@ -2896,7 +2966,7 @@ const pages = {
         </div>
 
         <div class="two-actions safe-bottom-actions">
-          <button class="button-secondary" data-route-next="dsm">DSM-5 계속하기</button>
+          <button class="button-secondary" data-route-next="dsm">증상 기준 체크 계속하기</button>
         </div>
       </section>
     `;
@@ -2915,10 +2985,10 @@ const pages = {
     return `
       <section class="page">
         <div class="hero-card stack-lg">
-          <div class="eyebrow">dsm quick analysis</div>
+          <div class="eyebrow">symptom check analysis</div>
           <p class="muted">${
             showDsmAiPending
-              ? "AI가 현재 DSM-5 응답을 바탕으로 결과를 해석하고 있습니다."
+              ? "AI가 현재 증상 기준 체크 응답을 바탕으로 결과를 해석하고 있습니다."
               : quickAnalysis.summary
           }</p>
         </div>
@@ -2987,7 +3057,7 @@ const pages = {
 
         <div class="hero-card stack-lg">
           <div class="panel dsm-image-panel">
-            <img class="dsm-image" src="${getDsmImageSrc(state.dsmIndex)}" alt="DSM-5 question ${state.dsmIndex + 1}" />
+            <img class="dsm-image" src="${getDsmImageSrc(state.dsmIndex)}" alt="증상 기준 체크 문항 ${state.dsmIndex + 1}" />
           </div>
           <p class="asrs-question">${question.prompt}</p>
           <p class="muted">${question.hint}</p>
@@ -3065,7 +3135,7 @@ const pages = {
               <div class="report-metric-grid">
                 <div class="report-item">
                   <div class="flex items-center justify-between gap-4">
-                    <strong>ASRS 부주의 점수</strong>
+                    <strong>자가보고 부주의 점수</strong>
                     <span class="chip">${profileMetric.asrsScore} / ${profileMetric.asrsMax}</span>
                   </div>
                   <div class="progress-bar"><div class="progress-fill" style="width:${toPercent(profileMetric.asrsScore, profileMetric.asrsMax)}%"></div></div>
@@ -3106,7 +3176,7 @@ const pages = {
               <div class="report-metric-grid">
                 <div class="report-item">
                   <div class="flex items-center justify-between gap-4">
-                    <strong>ASRS 충동성 점수</strong>
+                    <strong>자가보고 충동성 점수</strong>
                     <span class="chip">${profileMetric.asrsScore} / ${profileMetric.asrsMax}</span>
                   </div>
                   <div class="progress-bar"><div class="progress-fill" style="width:${toPercent(profileMetric.asrsScore, profileMetric.asrsMax)}%"></div></div>
@@ -3441,6 +3511,7 @@ function bindPageEvents() {
       if (event.cancelable) {
         event.preventDefault();
       }
+      handleGoNoGoTap();
     }, { passive: false });
     addGameListener(goNoGoScene, "touchmove", (event) => {
       if (event.cancelable) {

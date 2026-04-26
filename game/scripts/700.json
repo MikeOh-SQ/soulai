@@ -1,0 +1,223 @@
+{
+  "script_id": "event_700_points_gift_tease_01",
+  "title": "수상한 선물 준비",
+  "stage": "stage4",
+  "lines": [
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "후후후..."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "왜 웃어. 불안하게."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "아무것도 아니다. 굳이 말하자면, 아주 훌륭하고 감동적이며 역사에 남을 준비가 진행 중일 뿐이지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그게 하나도 아무것도 아닌 설명이 아닌데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "700점이다, 애드. 이쯤 되면 위대한 존재에겐 위대한 예우가 필요하다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "잠깐, 위대한 존재가 누구야."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "자네 말고 또 있나?"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...그렇게 바로 말하면 좀 기분 좋잖아."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "좋아해도 된다. 자네는 꽤 잘해냈으니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "그래서 뭘 준비 중인데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "비밀이다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "아니, 방금 대놓고 티 냈잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "그렇다! 티는 냈지만 알려주진 않는다! 그것이 바로 연출의 미학!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "진짜 쓸데없는 데서만 프로 같네."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "이건 단순한 물건이 아니다. 자네가 여기까지 해낸 시간을 형태로 남기는 상징이자, 모두가 보게 될 찬란한 무언가다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "잠깐, 왜 설명이 점점 무서워지지?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "걱정 마라. 보기만 해도 자네가 얼마나 대단한 곰인지 알 수 있는 그런 것이다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "그 말 들으니까 더 불안해졌어."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "후후, 선물이란 원래 조금의 긴장과 약간의 공포가 섞여야 기억에 남는 법이지."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "그건 선물이라기보다 함정 아니야?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "아무튼 자네를 위한 거다. 자네가 얼마나 여기까지 잘 왔는지, 눈으로 딱 보이게 해 주고 싶었거든."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...그렇게 말하면 좀 기대되긴 하는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "기대해도 좋다. 800점이 되면 자네도 알게 될 테니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "왜 꼭 800점까지 기다려야 하는데?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "아직 완성되지 않았으니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "완성? 만드는 거였어?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "앗."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "방금 뭔가 엄청 흘렸지?!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "못 들은 걸로 해라. 위대한 선물은 약간의 비밀 누설을 먹고 자라는 법이다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "그건 그냥 네가 실수한 거잖아."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "그래도 기억해 둬라, 애드. 이건 자네가 자네 자신을 조금 더 좋아하게 되길 바라서 준비하는 거다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "...그건 또 괜히 진심처럼 말하네."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "괜히가 아니다. 나는 원래 가끔 진심이다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_determined",
+      "expression_kr": "결심함 / 다시 해보려 함",
+      "text": "...좋아. 그럼 800점까지 가서 직접 확인해 주지."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "훌륭하다! 기대하라, 애드! 자네의 눈과 정신과 기억에 영원히 남을 무언가가 기다리고 있다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "끝까지 불안하게 말하지 마!"
+    }
+  ]
+}

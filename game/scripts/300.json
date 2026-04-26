@@ -1,0 +1,187 @@
+{
+  "script_id": "event_300_points_mid_01",
+  "title": "칭찬 같지 않은 칭찬",
+  "stage": "stage2",
+  "lines": [
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "후후... 느껴지는군."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "뭘 또 느끼는데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "숲의 공기가 달라졌다. 나뭇잎의 떨림, 흙의 결, 그리고 행정 문서의 흐름이 전보다 훨씬 부드러워졌어."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "행정 문서의 흐름은 대체 어떻게 느끼는 건데."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "느껴진다. 아주 미세하게, '아... 이제 좀 돌아가네' 하는 기운이."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "그거 그냥 네 기분 아니야?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "기분도 세계를 움직이는 중요한 자원이다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "또 대충 그럴듯하게 말한다."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "하지만 사실이지. 자네가 오고 나서 숲이 전보다 훨씬 덜 엉망이 되었으니까."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...덜 엉망이라는 표현이 조금 걸리긴 하는데, 듣고 보니 기분은 좋네."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "좋아해야지. 자네는 지금 아주 훌륭하게 우당탕탕하고 있다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "왜 꼭 마지막에 이상한 표현을 붙이냐고."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "애드, 잘 들어라. 처음부터 완벽하게 해내는 건 별로 중요하지 않다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "갑자기 진지해지네."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_serious",
+      "expression_kr": "정색함 / 진심 모드",
+      "text": "중요한 건, 어제보다 오늘이 조금 나아졌는가다. 그리고 자네는 지금 그걸 해내고 있다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_gloomy",
+      "expression_kr": "시무룩함 / 풀이 죽음",
+      "text": "...전에는 맨날 뭘 해도 제자리인 느낌이었거든."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "그럴 수 있지. 하지만 여기서는 남는다. 자네가 한 일도, 자네가 버틴 시간도."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_proud",
+      "expression_kr": "뿌듯함 / 작은 성취",
+      "text": "...그렇게 말하니까 진짜 내가 뭔가 해내고 있는 것 같네."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_neutral_smirk",
+      "expression_kr": "수상한 기본 미소",
+      "text": "같은 게 아니라 해내고 있다. 나는 거짓말을 자주 해도 이런 건 속이지 않는다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_confused",
+      "expression_kr": "당황함 / 어리둥절",
+      "text": "잠깐, 방금 엄청 중요한 사실을 이상하게 말하지 않았어?"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_teasing",
+      "expression_kr": "능글맞게 놀림",
+      "text": "후후, 중요한 건 디테일이 아니라 분위기다."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "아니, 그게 제일 불안한 부분이잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "하지만 괜찮다! 자네는 이미 300점의 곰이다! 이 정도면 초보 곰을 졸업하고 중급 곰쯤은 되었다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_neutral_tired",
+      "expression_kr": "지쳤지만 기본 상태",
+      "text": "중급 곰 기준이 너무 이상해."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_dramatic",
+      "expression_kr": "과장되게 비장함",
+      "text": "기준이란 원래 먼저 말한 자의 것이다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "그건 그냥 우기기잖아!"
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_gentle",
+      "expression_kr": "다정함 / 부드럽게 대해줌",
+      "text": "아무튼 잘하고 있다, 애드. 그러니 다음에도 너무 겁먹지 마라."
+    },
+    {
+      "speaker": "add",
+      "expression": "add_determined",
+      "expression_kr": "결심함 / 다시 해보려 함",
+      "text": "...응. 이번엔 진짜 조금, 할 수 있을 것 같은 느낌이 들어."
+    },
+    {
+      "speaker": "lumen",
+      "expression": "lumen_unhinged_excited",
+      "expression_kr": "또라이처럼 신남",
+      "text": "좋아! 그 기세로 가자! 숲의 미래와 나의 간식과 자네의 성장, 셋 다 매우 중요하다!"
+    },
+    {
+      "speaker": "add",
+      "expression": "add_tsukkomi",
+      "expression_kr": "버럭 태클함 / 어이없음",
+      "text": "끝까지 간식을 같은 급으로 놓네!"
+    }
+  ]
+}
