@@ -9,6 +9,10 @@ const SCRIPT_SEQUENCE = [
   { key: "700", url: "/game/scripts/700.json", stage: 4, label: "700" },
   { key: "800", url: "/game/scripts/800.json", stage: 5, label: "800" }
 ];
+const {
+  resolveCharacterImage,
+  showSpeakerImage
+} = window.DtxCommon;
 
 const app = document.getElementById("app");
 const bg = document.getElementById("bg");
@@ -42,27 +46,6 @@ function speakerToKorean(speaker) {
 function hideCharacters() {
   addImage.classList.remove("visible");
   lumenImage.classList.remove("visible");
-}
-
-function resolveCharacterImage(speaker, expression) {
-  const cleanExpression = String(expression || "").trim();
-  if (speaker === "add") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/add.png";
-  }
-  if (speaker === "lumen") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/lumen1.png";
-  }
-  return "";
-}
-
-function showSpeakerImage(element, mainSrc, fallbackSrc) {
-  element.onerror = () => {
-    if (element.src.endsWith(fallbackSrc)) {
-      return;
-    }
-    element.src = fallbackSrc;
-  };
-  element.src = mainSrc;
 }
 
 function render() {

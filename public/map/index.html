@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ADHDQQ.COM Map</title>
+    <link rel="stylesheet" href="/map/map.css?v=__MAP_ASSET_VERSION__" />
+  </head>
+  <body>
+    <div class="map-page">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">ADHDQQ.COM / MAP</p>
+          <h1>JSON 구조, 파생 스키마, AI 입력 흐름</h1>
+        </div>
+        <div class="toolbar">
+          <button type="button" data-save-layout>위치 저장</button>
+          <button type="button" data-zoom-out>-</button>
+          <button type="button" data-zoom-reset>100%</button>
+          <button type="button" data-zoom-in>+</button>
+        </div>
+      </header>
+
+      <section class="summary-strip">
+        <article class="summary-card summary-card-source">
+          <h2>입력 계층</h2>
+          <p>`config/*.json`과 튜토리얼 JSON에서 시작해, 실제 의미 흐름 기준으로 해석 계층과 AI 계층으로 이어집니다.</p>
+        </article>
+        <article class="summary-card summary-card-derived">
+          <h2>해석 계층</h2>
+          <p>프런트 로컬 분석과 서버 metrics가 중간 스키마를 만듭니다.</p>
+        </article>
+        <article class="summary-card summary-card-ai">
+          <h2>AI 계층</h2>
+          <p>RAG 검색형이 아니라, 입력 응답과 계산값을 프롬프트에 직접 주입합니다.</p>
+        </article>
+        <article class="summary-card summary-card-ui">
+          <h2>출력 계층</h2>
+          <p>SELF, SYM, REACT, RESULT, PLAN 화면이 최종 소비처입니다.</p>
+        </article>
+      </section>
+
+      <section class="legend-strip">
+        <label class="legend-item">
+          <input type="checkbox" data-edge-filter="direct" checked />
+          <i class="legend-line direct"></i>
+          <span>직접 의존</span>
+        </label>
+        <label class="legend-item">
+          <input type="checkbox" data-edge-filter="fallback" checked />
+          <i class="legend-line fallback"></i>
+          <span>fallback 의존</span>
+        </label>
+        <label class="legend-item">
+          <input type="checkbox" data-edge-filter="meta" checked />
+          <i class="legend-line meta"></i>
+          <span>설명용 / 약한 연결</span>
+        </label>
+      </section>
+
+      <div class="workspace">
+        <main class="canvas-shell">
+          <div class="canvas-hint">
+            마우스 휠로 확대/축소, 드래그로 이동, 노드 클릭으로 상세 보기
+          </div>
+          <div class="canvas" id="canvas">
+            <div class="viewport" id="viewport">
+              <svg class="edges" id="edges" width="2200" height="1500" viewBox="0 0 2200 1500" aria-hidden="true"></svg>
+              <div class="nodes" id="nodes"></div>
+            </div>
+          </div>
+        </main>
+
+        <aside class="detail-panel" id="detail-panel">
+          <div class="detail-empty" id="detail-empty">
+            <p class="eyebrow">DETAIL</p>
+            <h2>노드를 선택하세요</h2>
+          </div>
+
+          <div class="detail-content hidden" id="detail-content">
+            <p class="eyebrow" id="detail-type"></p>
+            <h2 id="detail-title"></h2>
+            <p class="detail-summary" id="detail-summary"></p>
+
+            <section>
+              <h3>핵심 설명</h3>
+              <ul id="detail-bullets"></ul>
+            </section>
+
+            <section>
+              <h3>주요 필드 / 변수</h3>
+              <div class="schema-table" id="detail-schema"></div>
+            </section>
+
+            <section>
+              <h3>연결</h3>
+              <ul id="detail-links"></ul>
+            </section>
+
+            <section class="hidden" id="detail-prompt-section">
+              <h3>AI Prompt</h3>
+              <pre class="prompt-box" id="detail-prompt"></pre>
+            </section>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <script src="/map/map.js?v=__MAP_ASSET_VERSION__"></script>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 :root {
   color-scheme: dark;
-  --bottom-nav-clearance: calc(6.5rem + env(safe-area-inset-bottom, 0px));
+  --bottom-nav-clearance: calc(7.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 * {
@@ -29,6 +29,15 @@ body.body-scroll-lock {
   position: relative;
 }
 
+.app-shell.dtx-scale-fit-root {
+  max-width: none;
+  width: 100%;
+  padding: 0 0 calc(env(safe-area-inset-bottom, 0px) * 0.5);
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: contain;
+}
+
 .topbar {
   position: sticky;
   top: 0;
@@ -55,6 +64,10 @@ body.body-scroll-lock {
   padding: 1rem 1rem calc(1.25rem + var(--bottom-nav-clearance));
 }
 
+#app.app-inline-nav {
+  padding-bottom: 1rem;
+}
+
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -64,13 +77,22 @@ body.body-scroll-lock {
   display: flex;
   justify-content: space-around;
   gap: 0.2rem;
-  padding: 0.55rem 0.75rem 0.95rem;
+  padding: 0.55rem 0.75rem calc(0.55rem + env(safe-area-inset-bottom, 0px));
   border-top-left-radius: 1.4rem;
   border-top-right-radius: 1.4rem;
   background: rgba(19, 19, 19, 0.84);
   backdrop-filter: blur(20px);
   box-shadow: 0 -4px 48px rgba(226, 226, 226, 0.06);
   z-index: 50;
+}
+
+.bottom-nav.bottom-nav-inline {
+  position: static;
+  left: auto;
+  bottom: auto;
+  transform: none;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .nav-item {
@@ -85,6 +107,19 @@ body.body-scroll-lock {
   color: rgba(226, 226, 226, 0.56);
   text-decoration: none;
   transition: transform 160ms ease, color 160ms ease, background 160ms ease;
+  border: 0;
+  background: transparent;
+  cursor: default;
+  opacity: 0.72;
+}
+
+.nav-item.is-interactive {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.nav-item:disabled {
+  pointer-events: none;
 }
 
 .nav-item.active {
@@ -116,6 +151,7 @@ body.body-scroll-lock {
 
 .page.game-page {
   animation: none;
+  gap: 0.65rem;
 }
 
 .hero-card,
@@ -584,6 +620,35 @@ body.body-scroll-lock {
   margin-bottom: 5.5rem;
 }
 
+.game-status-panel {
+  padding: 0.55rem 0.8rem;
+}
+
+.game-stage-card {
+  padding: 0.7rem;
+  min-height: 0;
+  justify-content: flex-start;
+  align-content: flex-start;
+}
+
+.page.game-page .safe-bottom-actions {
+  margin-bottom: 2.2rem;
+}
+
+.page.game-page.game-page-completed {
+  margin-bottom: 3rem;
+}
+
+.page.game-page.game-page-completed .safe-bottom-actions {
+  margin-bottom: calc(var(--bottom-nav-clearance) + 1rem);
+}
+
+.game-instruction-note {
+  display: grid;
+  gap: 0.35rem;
+  text-align: left;
+}
+
 .asrs-question {
   font-family: "Plus Jakarta Sans", sans-serif;
   font-size: clamp(1.05rem, 4.1vw, 1.45rem);
@@ -627,32 +692,32 @@ body.body-scroll-lock {
 }
 
 .asrs-image-panel {
-  padding: 0.4rem;
+  padding: 0.3rem;
   overflow: hidden;
   background: #242424;
 }
 
 .asrs-image {
   display: block;
-  width: 70%;
+  width: 100%;
   height: auto;
-  max-height: 154px;
+  max-height: min(48vh, 520px);
   object-fit: contain;
   border-radius: 0.8rem;
   margin: 0 auto;
 }
 
 .dsm-image-panel {
-  padding: 0.4rem;
+  padding: 0.3rem;
   overflow: hidden;
   background: #242424;
 }
 
 .dsm-image {
   display: block;
-  width: 70%;
+  width: 100%;
   height: auto;
-  max-height: 182px;
+  max-height: min(50vh, 540px);
   object-fit: contain;
   border-radius: 0.8rem;
   margin: 0 auto;
@@ -667,7 +732,7 @@ body.body-scroll-lock {
   position: relative;
   width: 100%;
   aspect-ratio: 1 / 1;
-  min-height: 320px;
+  min-height: clamp(260px, 38vh, 400px);
   border: 0;
   border-radius: 2rem;
   display: grid;
@@ -699,7 +764,7 @@ body.body-scroll-lock {
   z-index: 1;
   display: grid;
   place-items: center;
-  width: min(54%, 260px);
+  width: min(72%, 420px);
   aspect-ratio: 1 / 1;
 }
 
@@ -748,7 +813,7 @@ body.body-scroll-lock {
 
 .go-nogo-scene {
   position: relative;
-  min-height: 320px;
+  min-height: clamp(260px, 38vh, 400px);
   aspect-ratio: 1 / 1;
   border-radius: 2rem;
   overflow: hidden;
@@ -899,7 +964,9 @@ body.body-scroll-lock {
 }
 
 .balance-arena {
-  min-height: 320px;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: none;
   border-radius: 2rem;
   display: grid;
   place-items: center;
@@ -914,8 +981,8 @@ body.body-scroll-lock {
 }
 
 .balance-target {
-  width: 240px;
-  height: 240px;
+  width: min(84%, 520px);
+  aspect-ratio: 1 / 1;
   border-radius: 999px;
   border: 2px dashed rgba(194, 193, 255, 0.36);
   display: grid;
@@ -928,8 +995,8 @@ body.body-scroll-lock {
 .balance-target::after {
   content: "";
   position: absolute;
-  width: 116px;
-  height: 116px;
+  width: 46%;
+  aspect-ratio: 1 / 1;
   border-radius: 999px;
   border: 2px solid rgba(193, 208, 63, 0.45);
 }
@@ -939,8 +1006,8 @@ body.body-scroll-lock {
 }
 
 .balance-ball {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border-radius: 999px;
   background: linear-gradient(180deg, #ffacea, #f67adf);
   box-shadow: 0 0 24px rgba(246, 122, 223, 0.3);

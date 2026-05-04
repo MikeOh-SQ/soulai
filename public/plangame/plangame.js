@@ -2,15 +2,20 @@ const {
   getUserIdFromUrl,
   loadLatestRecordById,
   ensureDtx,
+  hasSeenTutorial,
+  markTutorialSeen,
   persistRecord,
   buildUrl,
   escapeHtml,
-  computeStageByScore
+  computeStageByScore,
+  resolveCharacterImage,
+  showSpeakerImage
 } = window.DtxCommon;
 
 const GOAL_COUNT = 3;
 const COOLDOWN_MS = 60 * 60 * 1000;
 const EVENT_URL = "/game/scripts/plan.json";
+const SHOULD_AUTO_TUTORIAL = new URLSearchParams(window.location.search).get("tutorial") === "1";
 
 const app = document.getElementById("app");
 const bg = document.getElementById("bg");
@@ -133,7 +138,7 @@ function renderGoals() {
             <span class="goal-title">${escapeHtml(goal.text)}</span>
             <span class="goal-meta">${escapeHtml(renderGoalMeta(goal))}</span>
           </button>
-          <button class="edit-button" type="button" aria-label="목표 수정" data-goal-edit="${index}">...</button>
+          <button class="edit-button" type="button" aria-label="목표 수정" data-goal-edit="${index}">수정</button>
         </div>
         <section class="goal-panel ${isOpen ? "" : "hidden"}">
           <div class="panel-row">
@@ -166,27 +171,6 @@ function render() {
 function hideCharacters() {
   addCharacter.classList.remove("visible");
   lumenCharacter.classList.remove("visible");
-}
-
-function resolveCharacterImage(speaker, expression) {
-  const cleanExpression = String(expression || "").trim();
-  if (speaker === "add") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/add.png";
-  }
-  if (speaker === "lumen") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/lumen1.png";
-  }
-  return "";
-}
-
-function showSpeakerImage(element, mainSrc, fallbackSrc) {
-  element.onerror = () => {
-    if (element.src.endsWith(fallbackSrc)) {
-      return;
-    }
-    element.src = fallbackSrc;
-  };
-  element.src = mainSrc;
 }
 
 function renderTutorialCharacter(line) {
@@ -326,7 +310,7 @@ function bindEvents() {
         guideModal.showModal();
         return;
       }
-      window.alert("목표를 누르면 완료 패널이 열립니다. 완료는 1시간마다 한 번 가능합니다. ... 버튼으로 목표를 수정하면 완료 기록이 초기화됩니다.");
+      window.alert("목표를 누르면 완료 패널이 열립니다. 완료는 1시간마다 한 번 가능합니다. 수정 버튼으로 목표를 바꾸면 완료 기록이 초기화됩니다.");
     });
   });
 
@@ -413,6 +397,10 @@ async function init() {
   state.record = record;
   state.goals = record.planGame.goals;
   render();
+  if (SHOULD_AUTO_TUTORIAL && !hasSeenTutorial(record, "plan")) {
+    await startTutorial();
+    await markTutorialSeen(record, "plan");
+  }
 }
 
 init().catch((error) => {

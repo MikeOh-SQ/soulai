@@ -1,6 +1,10 @@
 const BASE = "/test3/images";
 const EVENT_URL = "/test3/events/test3.json";
 const BACKGROUND_IMAGE = "test3.gif";
+const {
+  resolveCharacterImage,
+  showSpeakerImage
+} = window.DtxCommon;
 
 const DURATION_MS = 20000;
 const TICK_MS = 100;
@@ -74,27 +78,6 @@ function setArenaVisible(visible) {
 function hideCharacters() {
   addCharacter.classList.remove("visible");
   lumenCharacter.classList.remove("visible");
-}
-
-function resolveCharacterImage(speaker, expression) {
-  const cleanExpression = String(expression || "").trim();
-  if (speaker === "add") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/add.png";
-  }
-  if (speaker === "lumen") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/lumen1.png";
-  }
-  return "";
-}
-
-function showSpeakerImage(element, mainSrc, fallbackSrc) {
-  element.onerror = () => {
-    if (element.src.endsWith(fallbackSrc)) {
-      return;
-    }
-    element.src = fallbackSrc;
-  };
-  element.src = mainSrc;
 }
 
 function renderTutorialCharacter(line) {

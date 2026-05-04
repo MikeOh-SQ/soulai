@@ -2,10 +2,13 @@ const {
   getUserIdFromUrl,
   loadLatestRecordById,
   ensureDtx,
+  hasSeenTutorial,
   computeStageByScore,
   buildUrl,
   persistRecord,
-  api
+  api,
+  resolveCharacterImage,
+  showSpeakerImage
 } = window.DtxCommon;
 
 const EVENT_SEQUENCE = [
@@ -134,27 +137,6 @@ function hideEventCharacters() {
   eventLumen.classList.remove("visible");
 }
 
-function resolveCharacterImage(speaker, expression) {
-  const cleanExpression = String(expression || "").trim();
-  if (speaker === "add") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/add.png";
-  }
-  if (speaker === "lumen") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/lumen1.png";
-  }
-  return "";
-}
-
-function showSpeakerImage(element, mainSrc, fallbackSrc) {
-  element.onerror = () => {
-    if (element.src.endsWith(fallbackSrc)) {
-      return;
-    }
-    element.src = fallbackSrc;
-  };
-  element.src = mainSrc;
-}
-
 function speakerToKorean(speaker) {
   if (speaker === "add") return "애드";
   if (speaker === "lumen") return "루멘";
@@ -276,7 +258,18 @@ async function init() {
         return;
       }
       const target = button.getAttribute("data-nav");
-      window.location.href = buildUrl(`/${target}`, state.userId);
+      const url = new URL(buildUrl(`/${target}`, state.userId), window.location.origin);
+      const tutorialKey = target === "plangame"
+        ? "plan"
+        : target === "test1"
+          ? "build"
+          : target === "test2"
+            ? "chop"
+            : "";
+      if (tutorialKey && state.record && !hasSeenTutorial(state.record, tutorialKey)) {
+        url.searchParams.set("tutorial", "1");
+      }
+      window.location.href = url.toString();
     });
   });
 

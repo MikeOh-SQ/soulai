@@ -16,6 +16,7 @@ const test2ImagesDir = path.join(rootDir, "game", "test2");
 const test3ImagesDir = path.join(rootDir, "game", "test3");
 const configDir = path.join(rootDir, "config");
 const databaseDir = path.join(rootDir, "database");
+const mapLayoutFilePath = path.join(databaseDir, "map-layout.json");
 const geminiApiKey = process.env.GEMINI_API_KEY || "";
 const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
@@ -95,6 +96,21 @@ function safeJoin(base, target) {
   return resolved;
 }
 
+function getMapAssetVersion() {
+  const files = [
+    path.join(publicDir, "map", "index.html"),
+    path.join(publicDir, "map", "map.js"),
+    path.join(publicDir, "map", "map.css")
+  ];
+  const latestMtime = files.reduce((latest, filePath) => {
+    if (!fs.existsSync(filePath)) {
+      return latest;
+    }
+    return Math.max(latest, fs.statSync(filePath).mtimeMs);
+  }, 0);
+  return String(Math.floor(latestMtime || Date.now()));
+}
+
 function serveStatic(reqPath, res) {
   const baseDir = reqPath.startsWith("/images/")
     ? imagesDir
@@ -162,10 +178,24 @@ function serveStatic(reqPath, res) {
   const headers = {
     "Content-Type": mimeTypes[ext] || "application/octet-stream"
   };
-  if ((reqPath.startsWith("/test1") || reqPath.startsWith("/test2") || reqPath.startsWith("/test3") || reqPath.startsWith("/plangame") || reqPath.startsWith("/dtx"))
+  if (((reqPath === "/" || reqPath === "/index.html" || reqPath === "/app.js" || reqPath === "/styles.css")
+    || reqPath.startsWith("/test1")
+    || reqPath.startsWith("/test2")
+    || reqPath.startsWith("/test3")
+    || reqPath.startsWith("/map")
+    || reqPath.startsWith("/plangame")
+    || reqPath.startsWith("/dtx"))
     && [".html", ".js", ".css"].includes(ext)) {
     headers["Cache-Control"] = "no-store";
   }
+
+  if (reqPath.startsWith("/map") && path.basename(filePath) === "index.html") {
+    const html = fs.readFileSync(filePath, "utf-8").replaceAll("__MAP_ASSET_VERSION__", getMapAssetVersion());
+    res.writeHead(200, headers);
+    res.end(html);
+    return;
+  }
+
   res.writeHead(200, headers);
   fs.createReadStream(filePath).pipe(res);
 }
@@ -663,6 +693,20 @@ function parseJsonLoose(text) {
   }
 }
 
+function normalizePlanSuggestion(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function normalizePlanSuggestions(values, fallbackValues = []) {
+  const source = Array.isArray(values) && values.length ? values : fallbackValues;
+  return source
+    .map((item) => normalizePlanSuggestion(item))
+    .filter(Boolean)
+    .slice(0, 3);
+}
+
 function buildInsightsPrompt(record, metrics) {
   return [
     "서비스: ADHDQQ.COM ADHD 선별/감별 보조 모바일 웹 앱",
@@ -788,6 +832,33 @@ function buildDsmAnalysisPrompt(record, analysis, metrics) {
   ].join("\n");
 }
 
+function buildReactivityAnalysisPrompt(record, analysis, metrics) {
+  return [
+    "서비스: ADHDQQ.COM ADHD 선별/감별 보조 모바일 웹 앱",
+    "역할: 반응성 테스트 3종 결과를 짧고 공감적으로 해석하는 한국어 선별 보조 AI",
+    "중요: 진단 확정 표현 금지, 수행 과제 결과와 추가 평가 권고 수준으로만 작성",
+    "반응성 테스트 해석 기준:",
+    "- omissionRate가 높고 reactionVariability 또는 tau가 크면 부주의 신호를 우선 설명",
+    "- commissionRate가 높으면 충동성 또는 반응 억제 어려움을 설명",
+    "- stableDurationPct가 낮거나 spikeCount가 많으면 활동성/자기조절 신호를 보조적으로 설명",
+    "- validity.valid가 false인 영역은 데이터 부족으로 해석이 어렵다고 안내",
+    "- 수치를 과도하게 나열하지 말고, 이미 계산된 결과를 자연어로 풀어 설명",
+    "기록 JSON:",
+    JSON.stringify(record, null, 2),
+    "로컬 반응성 요약:",
+    JSON.stringify(analysis, null, 2),
+    "보조 점수:",
+    JSON.stringify(metrics, null, 2),
+    "요청:",
+    "1. summary는 전체 경향을 2문장 이내로 요약",
+    "2. inattention는 부주의 영역 해석을 2문장 이내로 설명",
+    "3. impulsivity는 충동성 영역 해석을 2문장 이내로 설명",
+    "4. hyperactivity는 활동성/자기조절 영역 해석을 2문장 이내로 설명",
+    "5. guidance는 수행 과제 한계와 다음 단계 권고를 2문장 이내로 설명",
+    "6. 한국어로만 작성"
+  ].join("\n");
+}
+
 async function generateInsights(record) {
   const metrics = computeAssessmentMetrics(record);
   const deterministic = buildDeterministicReport(metrics);
@@ -835,44 +906,49 @@ async function generateInsights(record) {
     });
   }
 
+  const mergedReport = payload.report || {};
+
   return {
     report: {
       schemaVersion: 2,
       generatedAt: new Date().toISOString(),
-      severity: deterministic.report.severity,
+      severity: mergedReport.severity || deterministic.report.severity,
       scores: metrics.scores,
       sections: {
-        summary: deterministic.report.sections.summary,
-        strength: deterministic.report.sections.strength,
-        watchout: deterministic.report.sections.watchout
+        summary: mergedReport.sections?.summary || deterministic.report.sections.summary,
+        strength: mergedReport.sections?.strength || deterministic.report.sections.strength,
+        watchout: mergedReport.sections?.watchout || deterministic.report.sections.watchout
       },
       hero: {
-        badges: deterministic.report.hero.badges,
-        summary: deterministic.report.hero.summary
+        badges: Array.isArray(mergedReport.hero?.badges) && mergedReport.hero.badges.length
+          ? mergedReport.hero.badges.slice(0, 3)
+          : deterministic.report.hero.badges,
+        summary: mergedReport.hero?.summary || deterministic.report.hero.summary
       },
       crossCheck: {
-        subjectiveTitle: deterministic.report.crossCheck.subjectiveTitle,
-        subjectiveText: deterministic.report.crossCheck.subjectiveText,
-        objectiveTitle: deterministic.report.crossCheck.objectiveTitle,
-        objectiveText: deterministic.report.crossCheck.objectiveText,
-        alignmentLabel: deterministic.report.crossCheck.alignmentLabel,
-        alignmentSummary: deterministic.report.crossCheck.alignmentSummary
+        subjectiveTitle: mergedReport.crossCheck?.subjectiveTitle || deterministic.report.crossCheck.subjectiveTitle,
+        subjectiveText: mergedReport.crossCheck?.subjectiveText || deterministic.report.crossCheck.subjectiveText,
+        objectiveTitle: mergedReport.crossCheck?.objectiveTitle || deterministic.report.crossCheck.objectiveTitle,
+        objectiveText: mergedReport.crossCheck?.objectiveText || deterministic.report.crossCheck.objectiveText,
+        alignmentLabel: mergedReport.crossCheck?.alignmentLabel || deterministic.report.crossCheck.alignmentLabel,
+        alignmentSummary: mergedReport.crossCheck?.alignmentSummary || deterministic.report.crossCheck.alignmentSummary
       },
       profile: {
-        inattentionSummary: deterministic.report.profile.inattentionSummary,
-        impulsivitySummary: deterministic.report.profile.impulsivitySummary
+        inattentionSummary: mergedReport.profile?.inattentionSummary || deterministic.report.profile.inattentionSummary,
+        impulsivitySummary: mergedReport.profile?.impulsivitySummary || deterministic.report.profile.impulsivitySummary,
+        hyperactivitySummary: mergedReport.profile?.hyperactivitySummary || deterministic.report.profile.hyperactivitySummary || ""
       },
       dailyImpact: {
         level: metrics.dailyImpactLevel,
-        label: buildDailyImpactLabel(metrics.dailyImpactLevel),
-        empathy: deterministic.report.dailyImpact.empathy
+        label: mergedReport.dailyImpact?.label || buildDailyImpactLabel(metrics.dailyImpactLevel),
+        empathy: mergedReport.dailyImpact?.empathy || deterministic.report.dailyImpact.empathy
       },
-      bridge: deterministic.report.bridge
+      bridge: {
+        cta: mergedReport.bridge?.cta || deterministic.report.bridge.cta
+      }
     },
     plan: {
-      suggestions: Array.isArray(payload.plan?.suggestions) && payload.plan.suggestions.length
-        ? payload.plan.suggestions.slice(0, 3)
-        : deterministic.plan.suggestions,
+      suggestions: normalizePlanSuggestions(payload.plan?.suggestions, deterministic.plan.suggestions),
       chat: [
         {
           role: "assistant",
@@ -899,7 +975,7 @@ async function generateChatReply(record, message) {
 
   return {
     reply: payload.reply || "요청 내용을 반영해 시작 장벽을 낮추는 쪽으로 계획을 조정해 보겠습니다.",
-    additionalSuggestion: payload.additionalSuggestion || ""
+    additionalSuggestion: normalizePlanSuggestion(payload.additionalSuggestion || "")
   };
 }
 
@@ -953,6 +1029,32 @@ async function generateDsmAnalysis(record, analysis) {
   };
 }
 
+async function generateReactivityAnalysis(record, analysis) {
+  const metrics = computeAssessmentMetrics(record);
+  const payload = await callGeminiJson({
+    systemInstruction: "You are a concise Korean assistant for interpreting short reactivity test results. Return JSON only.",
+    prompt: buildReactivityAnalysisPrompt(record, analysis, metrics),
+    schemaHint: [
+      "Schema:",
+      "{",
+      '  "summary": "string",',
+      '  "inattention": "string",',
+      '  "impulsivity": "string",',
+      '  "hyperactivity": "string",',
+      '  "guidance": "string"',
+      "}"
+    ].join("\n")
+  });
+
+  return {
+    summary: payload.summary || analysis.summary || "반응성 테스트에서는 일부 수행 지표를 함께 참고할 필요가 있습니다.",
+    inattention: payload.inattention || analysis.inattention || "신호 찾기 결과를 바탕으로 부주의 관련 수행 패턴을 보조적으로 참고할 수 있습니다.",
+    impulsivity: payload.impulsivity || analysis.impulsivity || "멈춤 버튼 결과를 바탕으로 충동성 관련 수행 패턴을 보조적으로 참고할 수 있습니다.",
+    hyperactivity: payload.hyperactivity || analysis.hyperactivity || "균형 유지 결과를 바탕으로 활동성 관련 수행 패턴을 보조적으로 참고할 수 있습니다.",
+    guidance: payload.guidance || analysis.guidance || "반응성 테스트는 짧은 수행 과제 기반의 보조 지표이므로 다른 선별 결과와 함께 해석하는 것이 적절합니다."
+  };
+}
+
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, "http://localhost");
   const pathname = url.pathname;
@@ -968,8 +1070,27 @@ const server = http.createServer(async (req, res) => {
 
     if (req.method === "GET" && pathname === "/api/records") {
       const files = fs.readdirSync(databaseDir).filter((file) => file.endsWith(".json"));
-      const records = files.map(getRecordMeta).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+      const records = files
+        .map((file) => {
+          try {
+            return getRecordMeta(file);
+          } catch (error) {
+            return null;
+          }
+        })
+        .filter((record) => record && typeof record.createdAt === "string")
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
       sendJson(res, 200, records);
+      return;
+    }
+
+    if (req.method === "GET" && pathname === "/api/map-layout") {
+      if (!fs.existsSync(mapLayoutFilePath)) {
+        sendJson(res, 200, { nodes: {} });
+        return;
+      }
+      const raw = fs.readFileSync(mapLayoutFilePath, "utf-8");
+      sendJson(res, 200, JSON.parse(raw));
       return;
     }
 
@@ -1001,6 +1122,42 @@ const server = http.createServer(async (req, res) => {
       const filePath = safeJoin(databaseDir, payload.fileName);
       fs.writeFileSync(filePath, JSON.stringify(payload.data, null, 2));
       sendJson(res, 200, { ok: true, fileName: payload.fileName });
+      return;
+    }
+
+    if (req.method === "POST" && pathname === "/api/map-layout") {
+      const body = await readBody(req);
+      const payload = JSON.parse(body || "{}");
+      const nodes = payload?.nodes;
+
+      if (!nodes || typeof nodes !== "object" || Array.isArray(nodes)) {
+        sendJson(res, 400, { error: "nodes object is required" });
+        return;
+      }
+
+      const normalizedNodes = {};
+      for (const [nodeId, position] of Object.entries(nodes)) {
+        if (!position || typeof position !== "object") {
+          continue;
+        }
+        const x = Number(position.x);
+        const y = Number(position.y);
+        if (!Number.isFinite(x) || !Number.isFinite(y)) {
+          continue;
+        }
+        normalizedNodes[nodeId] = {
+          x: Math.round(x),
+          y: Math.round(y)
+        };
+      }
+
+      const payloadToSave = {
+        updatedAt: new Date().toISOString(),
+        nodes: normalizedNodes
+      };
+
+      fs.writeFileSync(mapLayoutFilePath, JSON.stringify(payloadToSave, null, 2));
+      sendJson(res, 200, { ok: true, updatedAt: payloadToSave.updatedAt });
       return;
     }
 
@@ -1056,6 +1213,20 @@ const server = http.createServer(async (req, res) => {
       }
 
       const analysis = await generateDsmAnalysis(payload.record, payload.analysis);
+      sendJson(res, 200, analysis);
+      return;
+    }
+
+    if (req.method === "POST" && pathname === "/api/ai/react-analysis") {
+      const body = await readBody(req);
+      const payload = JSON.parse(body || "{}");
+
+      if (!payload.record || !payload.analysis) {
+        sendJson(res, 400, { error: "record and analysis are required" });
+        return;
+      }
+
+      const analysis = await generateReactivityAnalysis(payload.record, payload.analysis);
       sendJson(res, 200, analysis);
       return;
     }

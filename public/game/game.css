@@ -68,11 +68,11 @@ body {
   left: 50%;
   top: 52%;
   transform: translate(-50%, -50%);
-  width: min(760px, 88vw);
-  min-height: 132px;
-  padding: 16px 18px;
+  width: min(608px, 70vw);
+  min-height: 106px;
+  padding: 13px 14px;
   border: 2px solid #222;
-  border-radius: 10px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 16px 38px rgba(0, 0, 0, 0.28);
   color: #141414;
@@ -83,15 +83,15 @@ body {
 }
 
 .meta {
-  margin-bottom: 8px;
-  font-size: clamp(13px, 1.6vw, 16px);
+  margin-bottom: 6px;
+  font-size: clamp(10px, 1.3vw, 13px);
   font-weight: 700;
 }
 
 .text {
   margin: 0;
   line-height: 1.45;
-  font-size: clamp(17px, 2.2vw, 23px);
+  font-size: clamp(14px, 1.8vw, 18px);
   font-weight: 600;
   word-break: keep-all;
 }

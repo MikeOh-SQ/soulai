@@ -7,9 +7,14 @@ const {
   loadLatestRecordById,
   ensureDtx,
   addScore,
+  hasSeenTutorial,
+  markTutorialSeen,
   persistRecord,
-  buildUrl
+  buildUrl,
+  resolveCharacterImage,
+  showSpeakerImage
 } = window.DtxCommon;
+const SHOULD_AUTO_TUTORIAL = new URLSearchParams(window.location.search).get("tutorial") === "1";
 
 const BASE = "/test2/images";
 const EVENT_URL = "/test2/events/test2.json";
@@ -114,27 +119,6 @@ function goForest() {
 function hideCharacters() {
   addCharacter.classList.remove("visible");
   lumenCharacter.classList.remove("visible");
-}
-
-function resolveCharacterImage(speaker, expression) {
-  const cleanExpression = String(expression || "").trim();
-  if (speaker === "add") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/add.png";
-  }
-  if (speaker === "lumen") {
-    return cleanExpression ? `/game/images/${cleanExpression}.png` : "/game/images/lumen1.png";
-  }
-  return "";
-}
-
-function showSpeakerImage(element, mainSrc, fallbackSrc) {
-  element.onerror = () => {
-    if (element.src.endsWith(fallbackSrc)) {
-      return;
-    }
-    element.src = fallbackSrc;
-  };
-  element.src = mainSrc;
 }
 
 function renderTutorialCharacter(line) {
@@ -402,6 +386,10 @@ async function init() {
       onUserClick();
     }
   });
+  if (SHOULD_AUTO_TUTORIAL && record && !hasSeenTutorial(record, "chop")) {
+    await startTutorial();
+    await markTutorialSeen(record, "chop");
+  }
 }
 
 init().catch(() => {
